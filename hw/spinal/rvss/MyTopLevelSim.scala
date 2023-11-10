@@ -111,13 +111,13 @@ object MyTopLevelSim extends App {
       assert(dut.io.operation.toEnum == expectedOp, s"Decoding Failed. Expected OP: ${expectedOp} , Got: ${dut.io.operation.toEnum}")
     }
     
-    val bigIntValue = BigInt("00000000000000000100000000110011", 2)
+    // val bigIntValue = BigInt("00000000000000000100000000110011", 2)
       
-    dut.io.instr #= bigIntValue
-    println(dut.io.instr.toBigInt)
-    dut.clockDomain.waitSampling()
+    // dut.io.instr #= bigIntValue
+    // println(dut.io.instr.toBigInt)
+    // dut.clockDomain.waitSampling()
     // println(dut.io.operation.toBigInt)
-    println(dut.io.operation.toEnum)
+    // println(dut.io.operation.toEnum)
     // println(dut.operation.toBigInt.toString(2))
 
 
