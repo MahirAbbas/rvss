@@ -12,108 +12,111 @@ object MyTopLevelSim extends App {
     // dut.io.operation.simPublic()
     
     val testInstructions = Seq (
-      BigInt("00000000000000000000000000110011", 2), // ADD    
-      BigInt("01000000000000000000000000110011", 2), // SUB
-      BigInt("00000000000000000000000000110011", 2), // SLL
-      BigInt("00000000000000000000000000110011", 2), // SLT
-      BigInt("00000000000000000000000000110011", 2), // SLTU
-      BigInt("00000000000000000000000000110011", 2), // XOR
-      BigInt("00000000000000000000000000110011", 2), // SRL
-      BigInt("01000000000000000000000000110011", 2), // SRA
-      BigInt("00000000000000000000000000110011", 2), // OR
-      BigInt("00000000000000000000000000110011", 2), // AND
-      BigInt("00000000000000000000000000010011", 2), // ADDI
-      BigInt("00000000000000000000000000010011", 2), // SLTI
-      BigInt("00000000000000000000000000010011", 2), // SLTIU
-      BigInt("00000000000000000000000000010011", 2), // XORI
-      BigInt("00000000000000000000000000010011", 2), // ORI
-      BigInt("00000000000000000000000000010011", 2), // ANDI
-      BigInt("00000000000000000000000000010011", 2), // SLLI
-      BigInt("00000000000000000000000000010011", 2), // SRLI
-      BigInt("01000000000000000000000000010011", 2), // SRAI
-      BigInt("00000000000000000000000001101111", 2), // LUI
-      BigInt("00000000000000000000000000101111", 2), // AUIPC
-      BigInt("00000000000000000000000001100011", 2), // BEQ
-      BigInt("00000000000000000000000001100011", 2), // BNE
-      BigInt("00000000000000000000000001100011", 2), // BLT
-      BigInt("00000000000000000000000001100011", 2), // BGE
-      BigInt("00000000000000000000000001100011", 2), // BLTU
-      BigInt("00000000000000000000000001100011", 2), // BGEU
-      BigInt("00000000000000000000000000000011", 2), // LB
-      BigInt("00000000000000000000000000000011", 2), // LH
-      BigInt("00000000000000000000000000000011", 2), // LW
-      BigInt("00000000000000000000000000000011", 2), // LBU
-      BigInt("00000000000000000000000000000011", 2), // LHU
-      BigInt("00000000000000000000000001000011", 2), // SB
-      BigInt("00000000000000000000000001000011", 2), // SH
-      BigInt("00000000000000000000000001000011", 2), // SW
-      BigInt("00000000000000000000000011100011", 2), // ECALL/EBREAK
-      BigInt("00000000000000000000000011100111", 2), // JALR
-      BigInt("00000000000000000000000001101111", 2)  // JAL
+ BigInt("00000000000000000000000000110011", 2), // ADD  (0000000_00000_00000_000_00000_0110011)
+  BigInt("01000000000000000000000000110011", 2), // SUB  (0100000_00000_00000_000_00000_0110011)
+  BigInt("00000000000000000001000000110011", 2), // SLL  (0000000_00000_00000_001_00000_0110011)
+  BigInt("00000000000000000010000000110011", 2), // SLT  (0000000_00000_00000_010_00000_0110011)
+  BigInt("00000000000000000011000000110011", 2), // SLTU (0000000_00000_00000_011_00000_0110011)
+  BigInt("00000000000000000100000000110011", 2), // XOR  (0000000_00000_00000_100_00000_0110011)
+  BigInt("00000000000000000101000000110011", 2), // SRL  (0000000_00000_00000_101_00000_0110011)
+  BigInt("01000000000000000101000000110011", 2), // SRA  (0100000_00000_00000_101_00000_0110011)
+  BigInt("00000000000000000110000000110011", 2), // OR   (0000000_00000_00000_110_00000_0110011)
+  BigInt("00000000000000000111000000110011", 2), // AND  (0000000_00000_00000_111_00000_0110011)
+  BigInt("00000000000000000000000000010011", 2), // ADDI (0000000_00000_00000_000_00000_0010011)
+  BigInt("00000000000000000010000000010011", 2), // SLTI (0000000_00000_00000_010_00000_0010011)
+  BigInt("00000000000000000011000000010011", 2), // SLTIU(0000000_00000_00000_011_00000_0010011)
+  BigInt("00000000000000000100000000010011", 2), // XORI (0000000_00000_00000_100_00000_0010011)
+  BigInt("00000000000000000110000000010011", 2), // ORI  (0000000_00000_00000_110_00000_0010011)
+  BigInt("00000000000000000111000000010011", 2), // ANDI (0000000_00000_00000_111_00000_0010011)
+  BigInt("00000000000000000001000000010011", 2), // SLLI (0000000_00000_00000_001_00000_0010011)
+  BigInt("00000000000000000101000000010011", 2), // SRLI (0000000_00000_00000_101_00000_0010011)
+  BigInt("01000000000000000101000000010011", 2), // SRAI (0100000_00000_00000_101_00000_0010011)
+  BigInt("00000000000000000000000000110111", 2), // LUI  (0000000_00000_00000_000_00000_0110111)
+  BigInt("00000000000000000000000000010111", 2), // AUIPC(0000000_00000_00000_000_00000_0010111)
+  BigInt("00000000000000000000000001100011", 2), // BEQ  (0000000_00000_00000_000_00000_1100011)
+  BigInt("00000000000000000001000001100011", 2), // BNE  (0000000_00000_00000_001_00000_1100011)
+  BigInt("00000000000000000100000001100011", 2), // BLT  (0000000_00000_00000_100_00000_1100011)
+  BigInt("00000000000000000101000001100011", 2), // BGE  (0000000_00000_00000_101_00000_1100011)
+  BigInt("00000000000000000110000001100011", 2), // BLTU (0000000_00000_00000_110_00000_1100011)
+  BigInt("00000000000000000111000001100011", 2), // BGEU (0000000_00000_00000_111_00000_1100011)
+  BigInt("00000000000000000000000000000011", 2), // LB   (0000000_00000_00000_000_00000_0000011)
+  BigInt("00000000000000000001000000000011", 2), // LH   (0000000_00000_00000_001_00000_0000011)
+  BigInt("00000000000000000010000000000011", 2), // LW   (0000000_00000_00000_010_00000_0000011)
+  BigInt("00000000000000000100000000000011", 2), // LBU  (0000000_00000_00000_100_00000_0000011)
+  BigInt("00000000000000000101000000000011", 2), // LHU  (0000000_00000_00000_101_00000_0000011)
+  BigInt("00000000000000000000000000100011", 2), // SB   (0000000_00000_00000_000_00000_0100011)
+  BigInt("00000000000000000001000000100011", 2), // SH   (0000000_00000_00000_001_00000_0100011)
+  BigInt("00000000000000000010000000100011", 2), // SW   (0000000_00000_00000_010_00000_0100011)
+  BigInt("00000000000000000000000001100111", 2),  // JALR (0000000_00000_00000_000_00000_1100111)
+  BigInt("00000000000000000000000001101111", 2) // JAL  (0000000_00000_00000_000_00000_1101111)
     )
-    val testOps = Map (
-      0x00 -> OpCode.ADD,
-      0x01 -> OpCode.SUB,
-      0x02 -> OpCode.SLL,
-      0x03 -> OpCode.SLT,
-      0x04 -> OpCode.SLTU,
-      0x05 -> OpCode.XOR,
-      0x06 -> OpCode.SRL,
-      0x07 -> OpCode.SRA,
-      0x08 -> OpCode.OR,
-      0x09 -> OpCode.AND,
-      0x0A -> OpCode.ADDI,
-      0x0B -> OpCode.SLTI,
-      0x0C -> OpCode.SLTIU,
-      0x0D -> OpCode.XORI,
-      0x0E -> OpCode.ORI,
-      0x0F -> OpCode.ANDI,
-      0x10 -> OpCode.SLLI,
-      0x11 -> OpCode.SRLI,
-      0x12 -> OpCode.SRAI,
-      0x13 -> OpCode.LUI,
-      0x14 -> OpCode.AUIPC,
-      0x15 -> OpCode.BEQ,
-      0x16 -> OpCode.BNE,
-      0x17 -> OpCode.BLT,
-      0x18 -> OpCode.BGE,
-      0x19 -> OpCode.BLTU,
-      0x1A -> OpCode.BGEU,
-      0x1B -> OpCode.LB,
-      0x1C -> OpCode.LH,
-      0x1D -> OpCode.LW,
-      0x1E -> OpCode.LBU,
-      0x1F -> OpCode.LHU,
-      0x20 -> OpCode.SB,
-      0x21 -> OpCode.SH,
-      0x22 -> OpCode.SW,
-      0x23 -> OpCode.ECALL,
-      0x24 -> OpCode.JALR,
-      0x25 -> OpCode.JAL 
+    val testOps = Seq(
+       OpCode.ADD,
+       OpCode.SUB,
+       OpCode.SLL,
+       OpCode.SLT,
+       OpCode.SLTU,
+       OpCode.XOR,
+       OpCode.SRL,
+       OpCode.SRA,
+       OpCode.OR,
+       OpCode.AND,
+       OpCode.ADDI,
+       OpCode.SLTI,
+       OpCode.SLTIU,
+       OpCode.XORI,
+       OpCode.ORI,
+       OpCode.ANDI,
+       OpCode.SLLI,
+       OpCode.SRLI,
+       OpCode.SRAI,
+       OpCode.LUI,
+       OpCode.AUIPC,
+       OpCode.BEQ,
+       OpCode.BNE,
+       OpCode.BLT,
+       OpCode.BGE,
+       OpCode.BLTU,
+       OpCode.BGEU,
+       OpCode.LB,
+       OpCode.LH,
+       OpCode.LW,
+       OpCode.LBU,
+       OpCode.LHU,
+       OpCode.SB,
+       OpCode.SH,
+       OpCode.SW,
+       OpCode.JALR,
+       OpCode.JAL 
     )
 
     // for (op <- testOps) {
     //   println(op.toString())
     // // }
-    // for((instr,expectedOp) <- testOps) {
-    //   dut.io.instr #= instr
+    // 
 
-    //   // dut.clockDomain.waitSampling()
-    //   // dut.clockDomain.waitSampling()
-    //   // println(dut.decodedOp)
-    //   println(dut.io.instr.toBigInt)
-    //   println(expectedOp.toString())
-    //   println(dut.io.operation.toBigInt)
-    //   // println(dut.decodeInstrBits.opcode)
-    //   assert(dut.io.operation == expectedOp, s"Decoding Failed. Expected OP: ${expectedOp} , Got: ${dut.io.operation.toBigInt}")
-    // }
+
+    for((instr,expectedOp) <- testInstructions.zip(testOps)) {
+      dut.io.instr #= instr
+
+      dut.clockDomain.waitSampling()
+      // dut.clockDomain.forkStimulus(period = 10)
+      // dut.clockDomain.waitSampling()
+      // println(dut.decodedOp)
+      // println(dut.io.instr.toBigInt)
+      // println(expectedOp.toString())
+      // println(dut.io.operation.toEnum)
+
+      // println(dut.decodeInstrBits.opcode)
+      assert(dut.io.operation.toEnum == expectedOp, s"Decoding Failed. Expected OP: ${expectedOp} , Got: ${dut.io.operation.toEnum}")
+    }
     
-    val bigIntValue = BigInt("00000000000000000000000000110011", 2)
+    val bigIntValue = BigInt("00000000000000000100000000110011", 2)
       
     dut.io.instr #= bigIntValue
     println(dut.io.instr.toBigInt)
     dut.clockDomain.waitSampling()
-    println(dut.io.operation.toBigInt)
+    // println(dut.io.operation.toBigInt)
     println(dut.io.operation.toEnum)
     // println(dut.operation.toBigInt.toString(2))
 
