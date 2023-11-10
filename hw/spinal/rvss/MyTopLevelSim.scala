@@ -9,7 +9,7 @@ object MyTopLevelSim extends App {
   Config.sim.compile(Decode()).doSim { dut =>
     dut.io.instr #= 0
     dut.clockDomain.forkStimulus(period = 10)
-    dut.io.operation.simPublic()
+    // dut.io.operation.simPublic()
     
     val testInstructions = Seq (
       BigInt("00000000000000000000000000110011", 2), // ADD    
@@ -94,23 +94,26 @@ object MyTopLevelSim extends App {
 
     // for (op <- testOps) {
     //   println(op.toString())
+    // // }
+    // for((instr,expectedOp) <- testOps) {
+    //   dut.io.instr #= instr
+
+    //   // dut.clockDomain.waitSampling()
+    //   // dut.clockDomain.waitSampling()
+    //   // println(dut.decodedOp)
+    //   println(dut.io.instr.toBigInt)
+    //   println(expectedOp.toString())
+    //   println(dut.io.operation.toBigInt)
+    //   // println(dut.decodeInstrBits.opcode)
+    //   assert(dut.io.operation == expectedOp, s"Decoding Failed. Expected OP: ${expectedOp} , Got: ${dut.io.operation.toBigInt}")
     // }
-    for((instr,expectedOp) <- testOps) {
-      dut.io.instr #= instr
-
-      // dut.clockDomain.waitSampling()
-      // dut.clockDomain.waitSampling()
-      // println(dut.decodedOp)
-      println(expectedOp.toString())
-      println(dut.io.operation.toBigInt)
-      // println(dut.decodeInstrBits.opcode)
-      assert(dut.io.operation == expectedOp, s"Decoding Failed. Expected OP: ${expectedOp} , Got: ${dut.io.operation.toBigInt}")
-    }
     
-    val bigIntValue = BigInt("00000000000000000000000001100011", 2)
-
+    val bigIntValue = BigInt("01000000000000000000000000110011", 2)
+      
     dut.io.instr #= bigIntValue
+    println(dut.io.instr.toBigInt)
     dut.clockDomain.waitSampling()
+    println(dut.io.operation.toBigInt)
     // println(dut.operation.toBigInt.toString(2))
 
 

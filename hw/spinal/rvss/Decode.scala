@@ -16,13 +16,13 @@ case class Decode() extends Component {
     // val u_imm = io.instr(31 downto 12)
     // val j_imm = io.instr(31) ## io.instr(19 downto 12) ## io.instr(20) ## io.instr(30 downto 21) ## B("0")
     io.operation := OpCode.NOOP
-     
+
     val rd = io.instr(11 downto 7)
     val rs1 = io.instr(19 downto 15)
     val rs2 = io.instr(24 downto 20)
     
     
-    class decodeInstrBits extends Area{
+    val decodeInstrBits = new Area{
         val opcode = io.instr(6 downto 0)
         val funct3 = io.instr(14 downto 12)
         val funct7 = io.instr(31 downto 25)
@@ -115,6 +115,7 @@ case class Decode() extends Component {
             // 111
             is(B"1101111") {io.operation := OpCode.JAL}
             default {io.operation := OpCode.NOOP}
+
 
         }
 
