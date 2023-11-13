@@ -4,17 +4,17 @@ import spinal.core._
 
 case class ALU() extends Component {
     val io = new Bundle {
-        val SrcA, SrcB = in SInt(32 bits)
+        val SrcA, SrcB = in Bits(32 bits)
         val ALUControl = in UInt(3 bits)
-        val ALUResult = out SInt(32 bits)
+        val ALUResult = out Bits(32 bits)
     }
     
     switch (io.ALUControl){
         is(B"000") {
-            io.ALUResult := io.SrcA + io.SrcB
+            io.ALUResult:= (io.SrcA.asSInt + io.SrcB.asSInt).asBits
         }
         is(B"001") {
-            io.ALUResult := io.SrcA - io.SrcB
+            io.ALUResult := (io.SrcA.asSInt - io.SrcB.asSInt).asBits
         }
         // AND
         is(B"010") {
@@ -26,7 +26,7 @@ case class ALU() extends Component {
         }
         // Set Less Than 
         is(B"011") {
-            when (io.SrcA < io.SrcB) {
+            when (io.SrcA.asSInt < io.SrcB.asSInt) {
                 io.ALUResult := 1
             } otherwise {
                 io.ALUResult := 0

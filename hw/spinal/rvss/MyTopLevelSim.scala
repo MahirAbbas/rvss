@@ -5,6 +5,9 @@ import spinal.core.sim._
 import OpCode._
 
 object MyTopLevelSim extends App {
+  Config.sim.compile(Datapath()).doSim { dut =>
+
+  }
   
   Config.sim.compile(Decode()).doSim { dut =>
     dut.io.instr #= 0

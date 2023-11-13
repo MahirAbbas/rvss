@@ -8,6 +8,9 @@ case class Decode() extends Component {
     val io = new Bundle {
         val instr = in Bits(32 bits)
         val operation = out(OpCode())
+        val outInstr = out Bits(32 bits)
+        val outInstrFormat = out(InstrFormat())
+        outInstr := instr
     }
     
     // val i_imm = io.instr(31 downto 20) 
@@ -16,23 +19,31 @@ case class Decode() extends Component {
     // val u_imm = io.instr(31 downto 12)
     // val j_imm = io.instr(31) ## io.instr(19 downto 12) ## io.instr(20) ## io.instr(30 downto 21) ## B("0")
     io.operation := OpCode.NOOP
-
-    val rd = io.instr(11 downto 7)
-    val rs1 = io.instr(19 downto 15)
-    val rs2 = io.instr(24 downto 20)
+    io.outInstrFormat := InstrFormat.UNDEF
+    // io.outInstrFormat := InstrFormat.UNDEF
     
+
+    object InstrFormat extends SpinalEnum {
+        val R = newElement()
+        val I = newElement()
+        val S = newElement()
+        val B = newElement()
+        val U = newElement()
+        val J = newElement()
+        val UNDEF = newElement()
+    }
     
     val decodeInstrBits = new Area{
         val opcode = io.instr(6 downto 0)
         val funct3 = io.instr(14 downto 12)
         val funct7 = io.instr(31 downto 25)
-
         // val itype = InstrFormat() 
         switch(opcode) {
             // I-Type Instructions
             // 3
             is(B"0000011") {
                 switch(funct3) {
+                    io.outInstrFormat:= InstrFormat.I
                     is(B"000") {io.operation := OpCode.LB}
                     is(B"001") {io.operation := OpCode.LH}
                     is(B"010") {io.operation := OpCode.LW}
@@ -43,6 +54,7 @@ case class Decode() extends Component {
             // 19
             is(B"0010011") {
                 switch(funct3) {
+                    io.outInstrFormat := InstrFormat.I
                     is(B"000") {io.operation := OpCode.ADDI}
                     is(B"001") {io.operation := OpCode.SLLI}
                     is(B"010") {io.operation := OpCode.SLTI}
@@ -55,18 +67,26 @@ case class Decode() extends Component {
             }
             // 103 
             is(B"1100111") {
+                io.outInstrFormat := InstrFormat.I
                 io.operation := OpCode.JALR
             }
             
             // U-Type Instructions
             // 23
-            is(B"0010111") {io.operation := OpCode.AUIPC}
+            is(B"0010111") {
+                io.operation := OpCode.AUIPC
+                io.outInstrFormat := InstrFormat.U
+            }
             // 55
-            is(B"0110111") {io.operation := OpCode.LUI}
+            is(B"0110111") {
+                io.operation := OpCode.LUI
+                io.outInstrFormat := InstrFormat.U
+            }
 
             // S-Type Instructions
             // 35
             is(B"0100011") {
+                io.outInstrFormat := InstrFormat.S
                 switch(funct3) {
                     is(B"000") {io.operation := OpCode.SB}
                     is(B"001") {io.operation := OpCode.SH}
@@ -77,6 +97,7 @@ case class Decode() extends Component {
             // R-Type Instructions 
             // 51
             is(B"0110011") {
+                io.outInstrFormat := InstrFormat.R
                 switch(funct3) {
                     is (B"000") {
                         switch(funct7) {
@@ -103,6 +124,7 @@ case class Decode() extends Component {
             // B-Type Instructions
             // 99
             is(B"1100011") {
+                io.outInstrFormat := InstrFormat.B
                 switch(funct3) {
                     is(B"000") {io.operation := OpCode.BEQ}
                     is(B"001") {io.operation := OpCode.BNE}
@@ -113,7 +135,10 @@ case class Decode() extends Component {
                 }
             }
             // 111
-            is(B"1101111") {io.operation := OpCode.JAL}
+            is(B"1101111") {
+                io.operation := OpCode.JAL
+                io.outInstrFormat := InstrFormat.J
+            }
             default {io.operation := OpCode.NOOP}
 
 
