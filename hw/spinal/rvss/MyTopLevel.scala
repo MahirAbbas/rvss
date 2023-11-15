@@ -1,30 +1,32 @@
 package rvss
 
 import spinal.core._
+import OpCode._
+
+
 
 // Hardware definition
-case class MyTopLevel() extends Component {
+case class RVSS() extends Component {
   val io = new Bundle {
-    val cond0 = in  Bool()
-    val cond1 = in  Bool()
-    val flag  = out Bool()
-    val state = out UInt(8 bits)
+    val instruction = in Bits(32 bits)
   }
+  val decode = new Decode()
+  val datapath = new Datapath()
+  
+  decode.io.instr := io.instruction
+  datapath.io.instruction := decode.io.outInstr
+  datapath.io.op := decode.io.operation
 
-  val counter = Reg(UInt(8 bits)) init 0
-
-  when(io.cond0) {
-    counter := counter + 1
-  }
-
-  io.state := counter
-  io.flag := (counter === 0) | io.cond1
 }
 
-object MyTopLevelVerilog extends App {
-  Config.spinal.generateVerilog(MyTopLevel())
+object RVSSVerilog extends App {
+  Config.spinal.generateVerilog(RVSS())
 }
 
-object MyTopLevelVhdl extends App {
-  Config.spinal.generateVhdl(MyTopLevel())
+// object MyTopLevelVhdl extends App {
+//   Config.spinal.generateVhdl(MyTopLevel())
+// }
+
+object DatapathVerilog extends App {
+  Config.spinal.generateVerilog(Datapath())
 }
