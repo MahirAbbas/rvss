@@ -1,6 +1,7 @@
 package rvss
 
 import spinal.core._
+import spinal.core.sim._
 import spinal.lib._
 
 case class Extend() extends Component {
@@ -18,7 +19,7 @@ case class Datapath() extends Component {
         // val iformat = in(InstrFormat())
     }
 
-    val regFile = new RegFile()
+    val regFile = new RegFile() 
     // val extend = new Extend()
     val alu = new ALU()
     // val instrMemory = Reg(Bits(32 bits))
@@ -49,6 +50,12 @@ case class Datapath() extends Component {
     val b_imm = io.instruction(31) ## io.instruction(7) ## io.instruction(30 downto 25) ## io.instruction(11 downto 8) ## B("0")
     val u_imm = io.instruction(31 downto 12)
     val j_imm = io.instruction(31) ## io.instruction(19 downto 12) ## io.instruction(20) ## io.instruction(30 downto 21) ## B("0")
+
+
+    val controlUnit = new Area {
+        
+    }
+
 
     val loadData = new Area {
         // FIX: TODO: MIGHT BE INCORRECT
@@ -91,7 +98,7 @@ case class Datapath() extends Component {
             regFile.io.writeAddress3 := io.instruction(11 downto 7).asUInt
             alu.io.ALUControl := U"000"
             alu.io.SrcA := regFile.io.readData1.asSInt
-            alu.io.SrcB := io.instruction(31 downto 20).resize(32).asSInt
+            alu.io.SrcB := io.instruction(31 downto 20).asSInt.resize(32)
             regFile.io.writeData3 := alu.io.ALUResult.asBits
             regFile.io.writeEnable3 := Bool(true)
         }
@@ -104,6 +111,26 @@ case class Datapath() extends Component {
             regFile.io.readAddress2 := io.instruction(24 downto 20).asUInt            
             regFile.io.writeAddress3 := io.instruction(11 downto 7).asUInt
             alu.io.ALUControl := U"110"
+            alu.io.SrcA := regFile.io.readData1.asSInt
+            alu.io.SrcB := regFile.io.readData2.asSInt
+            regFile.io.writeData3 := alu.io.ALUResult.asBits
+            regFile.io.writeEnable3 := Bool(true)
+        }
+        when(io.op === OpCode.AND) {
+            regFile.io.readAddress1 := io.instruction(19 downto 15).asUInt            
+            regFile.io.readAddress2 := io.instruction(24 downto 20).asUInt            
+            regFile.io.writeAddress3 := io.instruction(11 downto 7).asUInt
+            alu.io.ALUControl := U"111"
+            alu.io.SrcA := regFile.io.readData1.asSInt
+            alu.io.SrcB := regFile.io.readData2.asSInt
+            regFile.io.writeData3 := alu.io.ALUResult.asBits
+            regFile.io.writeEnable3 := Bool(true)
+        }
+        when(io.op === OpCode.ADD) {
+            regFile.io.readAddress1 := io.instruction(19 downto 15).asUInt            
+            regFile.io.readAddress2 := io.instruction(24 downto 20).asUInt            
+            regFile.io.writeAddress3 := io.instruction(11 downto 7).asUInt
+            alu.io.ALUControl := U"000"
             alu.io.SrcA := regFile.io.readData1.asSInt
             alu.io.SrcB := regFile.io.readData2.asSInt
             regFile.io.writeData3 := alu.io.ALUResult.asBits

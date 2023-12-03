@@ -1,10 +1,11 @@
 package rvss
 
 import spinal.core._
+import spinal.core.sim._
 
 case class ALU() extends Component {
     val io = new Bundle {
-        val SrcA, SrcB = in SInt(32 bits)
+        val SrcA, SrcB = in SInt(32 bits) simPublic()
         val ALUControl = in UInt(3 bits)
         val ALUResult = out Bits(32 bits)
     }

@@ -5,29 +5,93 @@ import spinal.core.sim._
 import OpCode._
 
 object MyTopLevelSim extends App {
-  Config.sim.compile(new RVSS()).doSim { dut =>
+  Config.sim.withWave.compile(new RVSS()).doSim("riscv-test") { dut =>
+
+    dut.datapath.regFile.regFile.simPublic()
+
+
     val testBench = Seq (
-      BigInt("00000000010100000000000100010011",2),
-      BigInt("00C00193",16),
-      BigInt("FF718393",16),
-      BigInt("0023E233",16),
-      BigInt("0041F2B3",16),
-      BigInt("004282B3",16)
+      BigInt("00000000010100000000000100010011",2), // addi x2, x0, 5 \\ x2=5
+      BigInt("00000000110000000000000110010011",2), // addi x3, x0, 12 \\ x3 = 12
+      BigInt("11111111011100011000001110010011",2), // addi x7, x3, -9 \\ x7 = 3
+      BigInt("00000000001000111110001000110011",2), // or x4, x7, x2 \\ x4 = 7
+      BigInt("00000000010000011111001010110011",2), // and x5, x3, x4 \\ x5 = 4
+      BigInt("00000000010000101000001010110011",2),  // add x5, x5, x4 
+      // BigInt("0000000 00100 00101 000 00101 0110011",2),  // add x5, x5, x4 
+      // BigInt("00000000001000111010001000110011",2), // slt x4, x3, x4
+      // BigInt("0000000010100100000001110110011",2), // add x7, x4, x5 
+      // BigInt("0100000001000111000001110110011",2), // sub x7, x7, x2
+      // BigInt("00001010011100011010010000100011",2), // sw x7, 84(x3)
+      // BigInt("00000110000000000010000100000011",2), // lw x2, 96(x0)
+      // BigInt("00000000010100010000010010110011",2), // add x9, x2, x5
+      // BigInt("00000000000100000000000100010011",2), // addi x2, x0, 1
+      // BigInt("00000000100100010000000100110011",2), // add x2, x2, x9
+      // BigInt("00000010001000011010000000100011",2), // sw x2, 0x20(x3)
     )
-    // dut.io.instruction #= 0
-    // dut.clockDomain.waitSampling()
-    // dut.clockDomain.assertReset()
-    
-      dut.io.instruction #= testBench(0)
-      dut.clockDomain.waitSampling(10)
-      // dut.regFile.io.readAddress1(U"00010")
-      // println(dut.regFile.io.readData1)
-      // dut.clockDomain.waitSampling()
-      // 
+
+    val testBenchHex = Seq (
+      BigInt("00500113",16), // addi x2, x0, 5
+      BigInt("00C00193",16), // addi x3, x0, 12
+      BigInt("FF718393",16), // addi x7, x3, -9
+      BigInt("0023E233",16), // or x4, x7, x2
+      BigInt("0041F2B3",16), // and x5, x3, x4
+      BigInt("004282B3",16)  // add x5, x5, x4
+    )
+    dut.clockDomain.forkStimulus(50)
+
+    // dut.io.instruction #= BigInt("00000000010100000000000100010011",2)
+    // sleep(10)
+    // dut.clockDomain.waitSampling(10)
+    for (instr <- testBench) {
+      dut.io.instruction #= instr
+      dut.clockDomain.waitSampling(8)
+      println(s"ALU SRCA: ${dut.datapath.alu.io.SrcA.toInt}")
+      println(s"ALU SRCB: ${dut.datapath.alu.io.SrcB.toInt}")
+      println(s"opcode: ${dut.decode.io.operation.toEnum}")
+      println(s"x1: ${dut.datapath.regFile.regFile.getBigInt(1)}")
+      println(s"x2: ${dut.datapath.regFile.regFile.getBigInt(2)}")
+      println(s"x3: ${dut.datapath.regFile.regFile.getBigInt(3)}")
+      println(s"x4: ${dut.datapath.regFile.regFile.getBigInt(4)}")
+      println(s"x5: ${dut.datapath.regFile.regFile.getBigInt(5)}")
+      println(s"x6: ${dut.datapath.regFile.regFile.getBigInt(6)}")
+      println(s"x7: ${dut.datapath.regFile.regFile.getBigInt(7)}")
+      println(s"x8: ${dut.datapath.regFile.regFile.getBigInt(8)}")
+      println(s"x9: ${dut.datapath.regFile.regFile.getBigInt(9)}")
+      println(s"readData1: ${dut.datapath.regFile.io.readData1.toBigInt}")
+
       
-    
+    }
+    // dut.clockDomain.waitSampling(10)
+    //   println(s"x9: ${dut.datapath.regFile.regFile.getBigInt(9)}")
   }
 }
+
+
+object ALUSim extends App {
+  Config.sim.compile(ALU()).doSim { dut =>
+    dut.clockDomain.forkStimulus(6)
+    
+    dut.io.SrcA #= BigInt("10")
+    dut.io.SrcB #= BigInt("10")
+    dut.io.ALUControl #= BigInt("000",2)
+    dut.clockDomain.waitSampling(2)
+    println(s"${dut.io.ALUResult.toBigInt}")
+    
+
+    dut.io.SrcA #= BigInt("30")
+    dut.io.SrcB #= BigInt("30")
+    dut.io.ALUControl #= BigInt("000",2)
+    dut.clockDomain.waitSampling(20)
+    println(s"${dut.io.ALUResult.toBigInt}")
+    
+    dut.io.SrcA #= BigInt("-5")
+    dut.io.SrcB #= BigInt("10")
+    dut.io.ALUControl #= BigInt("000",2)
+    dut.clockDomain.waitSampling(20)
+    println(s"${dut.io.ALUResult.toBigInt}")
+  }
+}
+
 
 object DecodeTestBench extends App {
  

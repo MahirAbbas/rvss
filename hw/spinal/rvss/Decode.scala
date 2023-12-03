@@ -2,17 +2,19 @@ package rvss
 
 import spinal.core._
 import OpCode._
+import spinal.core.sim._
 
 
 case class Decode() extends Component {
     val io = new Bundle {
         val instr = in Bits(32 bits)
-        val operation = out(OpCode())
+        val operation = out(OpCode()) simPublic()
         val outInstr = out Bits(32 bits)
         val outInstrFormat = out(InstrFormat())
         outInstr := instr
+        // val operation = out(Reg(OpCode)) simPublic()
     }
-    
+    val register =  Reg(OpCode())
     // val i_imm = io.instr(31 downto 20) 
     // val s_imm = io.instr(31 downto 25) ## io.instr(11 downto 7)
     // val b_imm = io.instr(31) ## io.instr(7) ## io.instr(30 downto 25) ## io.instr(11 downto 8) ## B("0")
@@ -21,7 +23,6 @@ case class Decode() extends Component {
     io.operation := OpCode.NOOP
     io.outInstrFormat := InstrFormat.UNDEF
     // io.outInstrFormat := InstrFormat.UNDEF
-    
 
     object InstrFormat extends SpinalEnum {
         val R = newElement()
@@ -41,6 +42,7 @@ case class Decode() extends Component {
         switch(opcode) {
             // I-Type Instructions
             // 3
+            //
             is(B"0000011") {
                 switch(funct3) {
                     io.outInstrFormat:= InstrFormat.I
