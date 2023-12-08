@@ -24,15 +24,6 @@ case class Decode() extends Component {
     io.outInstrFormat := InstrFormat.UNDEF
     // io.outInstrFormat := InstrFormat.UNDEF
 
-    object InstrFormat extends SpinalEnum {
-        val R = newElement()
-        val I = newElement()
-        val S = newElement()
-        val B = newElement()
-        val U = newElement()
-        val J = newElement()
-        val UNDEF = newElement()
-    }
     
     val decodeInstrBits = new Area{
         val opcode = io.instr(6 downto 0)

@@ -44,7 +44,15 @@ object OpCode extends SpinalEnum {
     val FENCE = newElement()
     val NOOP = newElement()
 
-    ADD.setName("ADD")
-    NOOP.setName("NOOP")
 
+}
+
+object InstrFormat extends SpinalEnum {
+    val R = newElement()
+    val I = newElement()
+    val S = newElement()
+    val B = newElement()
+    val U = newElement()
+    val J = newElement()
+    val UNDEF = newElement()
 }
