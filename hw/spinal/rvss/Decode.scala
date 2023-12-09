@@ -9,9 +9,9 @@ case class Decode() extends Component {
     val io = new Bundle {
         val instr = in Bits(32 bits)
         val operation = out(OpCode()) simPublic()
-        val outInstr = out Bits(32 bits)
+        // val outInstr = out Bits(32 bits)
         val outInstrFormat = out(InstrFormat())
-        outInstr := instr
+        // outInstr := instr
         // val operation = out(Reg(OpCode)) simPublic()
     }
     val register =  Reg(OpCode())

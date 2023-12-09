@@ -27,35 +27,55 @@ object MyTopLevelSim extends App {
     )
 
     val testBenchHex = Seq (
-      BigInt("00500113",16), // addi x2, x0, 5
-      BigInt("00C00193",16), // addi x3, x0, 12
-      BigInt("FF718393",16), // addi x7, x3, -9
-      BigInt("0023E233",16), // or x4, x7, x2
-      BigInt("0041F2B3",16), // and x5, x3, x4
-      BigInt("004282B3",16)  // add x5, x5, x4
+      BigInt("00500113",16),
+      BigInt("00C00193",16),
+      // BigInt("FF718393",16),
+      // BigInt("0023E233",16),
+      // BigInt("0041F2B3",16),
+      // BigInt("004282B3",16),
+      // BigInt("02728863",16),
+      // BigInt("0041A233",16),
+      // BigInt("00020463",16),
+      // BigInt("00000293",16),
+      // BigInt("0023A233",16),
+      // BigInt("005203B3",16),
+      // BigInt("402383B3",16),
+      // BigInt("0471AA23",16),
+      // BigInt("06002103",16),
+      // BigInt("005104B3",16),
+      // BigInt("008001EF",16),
+      // BigInt("00100113",16),
+      // BigInt("00910133",16),
+      // BigInt("0221A023",16),
+      // BigInt("00210063",16),
+
     )
-    dut.datapath.fetch.instructionMemory.init(testBenchHex.map(value => B(value, 32 bits)))
-
+    dut.datapath.memory.dataMemory.simPublic()
+    dut.datapath.fetch.instructionMemory.simPublic()
+    for((instr, index) <- testBench.zipWithIndex) {
+      dut.datapath.fetch.instructionMemory.setBigInt(index, instr)
+    }
     dut.clockDomain.forkStimulus(50)
+    // for((instr,index) <- testBench.zipWithIndex) {
+      // print(BigInt("00500113",16).toString(16))
+      // print(dut.datapath.fetch.instructionMemory.getBigInt(index).toString(16))
+    // }
 
-    // dut.io.instruction #= BigInt("00000000010100000000000100010011",2)
-    // sleep(10)
-    // dut.clockDomain.waitSampling(10)
     for (instr <- testBench) {
-      dut.clockDomain.waitSampling(8)
-      println(s"ALU SRCA: ${dut.datapath.alu.io.SrcA.toInt}")
-      println(s"ALU SRCB: ${dut.datapath.alu.io.SrcB.toInt}")
+      dut.clockDomain.waitSampling(50)
+      // println(s"ALU SRCA: ${dut.datapath.alu.io.SrcA.toInt}")
+      // println(s"ALU SRCB: ${dut.datapath.alu.io.SrcB.toInt}")
       println(s"opcode: ${dut.control.decode.io.operation.toEnum}")
-      println(s"x1: ${dut.datapath.decode.regFile.regFile.getBigInt(1)}")
-      println(s"x2: ${dut.datapath.decode.regFile.regFile.getBigInt(2)}")
-      println(s"x3: ${dut.datapath.decode.regFile.regFile.getBigInt(3)}")
-      println(s"x4: ${dut.datapath.decode.regFile.regFile.getBigInt(4)}")
-      println(s"x5: ${dut.datapath.decode.regFile.regFile.getBigInt(5)}")
-      println(s"x6: ${dut.datapath.decode.regFile.regFile.getBigInt(6)}")
-      println(s"x7: ${dut.datapath.decode.regFile.regFile.getBigInt(7)}")
-      println(s"x8: ${dut.datapath.decode.regFile.regFile.getBigInt(8)}")
-      println(s"x9: ${dut.datapath.decode.regFile.regFile.getBigInt(9)}")
-      println(s"readData1: ${dut.datapath.decode.regFile.io.readData1.toBigInt}")
+      println(s"x1: ${dut.datapath.datapathDecode.regFile.regFile.getBigInt(1)}")
+      println(s"x2: ${dut.datapath.datapathDecode.regFile.regFile.getBigInt(2)}")
+      println(s"x3: ${dut.datapath.datapathDecode.regFile.regFile.getBigInt(3)}")
+      println(s"x4: ${dut.datapath.datapathDecode.regFile.regFile.getBigInt(4)}")
+      println(s"x5: ${dut.datapath.datapathDecode.regFile.regFile.getBigInt(5)}")
+      println(s"x6: ${dut.datapath.datapathDecode.regFile.regFile.getBigInt(6)}")
+      println(s"x7: ${dut.datapath.datapathDecode.regFile.regFile.getBigInt(7)}")
+      println(s"x8: ${dut.datapath.datapathDecode.regFile.regFile.getBigInt(8)}")
+      println(s"x9: ${dut.datapath.datapathDecode.regFile.regFile.getBigInt(9)}")
+      println(s"readData1: ${dut.datapath.datapathDecode.regFile.io.readData1.toBigInt}")
 
       
     }
@@ -152,7 +172,7 @@ object DecodeTestBench extends App {
       // println(dut.decodedOp)
       // println(dut.io.instr.toBigInt)
       // println(expectedOp.toString())
-      // println(dut.io.operation.toEnum)
+      println(dut.io.operation.toEnum)
 
       // println(dut.decodeInstrBits.opcode)
       assert(dut.io.operation.toEnum == expectedOp, s"Decoding Failed. Expected OP: ${expectedOp} , Got: ${dut.io.operation.toEnum}")

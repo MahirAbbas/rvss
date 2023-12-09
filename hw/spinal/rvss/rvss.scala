@@ -12,15 +12,18 @@ case class RVSS() extends Component {
 
     val control = new Control()
     val datapath = new Datapath()
-    
-    control.io.instrucion := datapath.fetch.io.instruction
-    datapath.decode.io.writeEnable := control.io.regWrite
-    datapath.decode.io.itype := control.io.immItype
-    datapath.execute.io.aluSrc := control.io.ALUSrc
-    datapath.execute.io.aluControl := control.io.ALUControl
-    datapath.memory.io.writeEnable := control.io.memWrite
-    datapath.memory.io.resultSrc := control.io.resultSrc
+
+    control.io.instrucion := datapath.io.instruction
+    datapath.io.itype := control.io.immItype
+    datapath.io.PCSrc := control.io.PCSrc
+    datapath.io.ResultSrc := control.io.resultSrc
+    datapath.io.MemWrite := control.io.memWrite
+    datapath.io.ALUControl := control.io.ALUControl
+    datapath.io.ALUSrc := control.io.ALUSrc
+    datapath.io.RegWrite := control.io.regWrite
+
 }
+
 
 object RVSSVerilog extends App {
     Config.spinal.generateVerilog(RVSS())
