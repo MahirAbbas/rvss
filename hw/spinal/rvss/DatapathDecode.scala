@@ -21,6 +21,7 @@ class DatapathDecode() extends Component{
     io.RD1E := regFile.io.readData1.asSInt
     io.RD2E := regFile.io.readData2.asSInt
     regFile.io.writeData3 := io.WD3E
+    regFile.io.writeEnable3 := io.writeEnable
     
     val i_imm = io.instr(31 downto 20) 
     val s_imm = io.instr(31 downto 25) ## io.instr(11 downto 7)

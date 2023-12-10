@@ -21,15 +21,15 @@ case class ALU() extends Component {
             io.ALUResult := (io.SrcA- io.SrcB).asBits
         }
         // AND
-        is(U"010") {
+        is(U"111") {
             io.ALUResult := io.SrcA.asBits & io.SrcB.asBits
         }
         // OR
-        is(U"011") {
+        is(U"110") {
             io.ALUResult := io.SrcA.asBits | io.SrcB.asBits
         }
         // Set Less Than 
-        is(U"101") {
+        is(U"010") {
             when (io.SrcA< io.SrcB) {
                 io.ALUResult := 1
             } otherwise {

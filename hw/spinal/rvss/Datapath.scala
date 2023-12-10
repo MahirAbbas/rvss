@@ -50,7 +50,7 @@ case class Datapath() extends Component {
 
     
 
-    datapathDecode.io.WD3E := memory.io.result.asBits
+    datapathDecode.io.WD3E := Mux(io.ResultSrc,memory.io.result.asBits, execute.io.aluResult.asBits)
 
 
     

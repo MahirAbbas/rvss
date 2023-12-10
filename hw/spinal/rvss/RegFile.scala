@@ -18,10 +18,10 @@ case class RegFile() extends Component {
     regFile.init(Seq.fill(32)(B(0,32 bits)))
     
     when(io.writeEnable3 && io.writeAddress3 =/= 0){
-        regFile.write(address = io.writeAddress3, data = io.writeData3)
+        regFile.write(address = io.writeAddress3, data = io.writeData3, enable = io.writeEnable3)
     }
     
-    io.readData1:= regFile.readSync(address= io.readAddress1)
-    io.readData2:= regFile.readSync(address= io.readAddress2)
+    io.readData1:= regFile.readAsync(address= io.readAddress1)
+    io.readData2:= regFile.readAsync(address= io.readAddress2)
     
 }

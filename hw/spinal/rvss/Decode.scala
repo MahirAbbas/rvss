@@ -9,31 +9,20 @@ case class Decode() extends Component {
     val io = new Bundle {
         val instr = in Bits(32 bits)
         val operation = out(OpCode()) simPublic()
-        // val outInstr = out Bits(32 bits)
         val outInstrFormat = out(InstrFormat())
-        // outInstr := instr
-        // val operation = out(Reg(OpCode)) simPublic()
     }
     val register =  Reg(OpCode())
-    // val i_imm = io.instr(31 downto 20) 
-    // val s_imm = io.instr(31 downto 25) ## io.instr(11 downto 7)
-    // val b_imm = io.instr(31) ## io.instr(7) ## io.instr(30 downto 25) ## io.instr(11 downto 8) ## B("0")
-    // val u_imm = io.instr(31 downto 12)
-    // val j_imm = io.instr(31) ## io.instr(19 downto 12) ## io.instr(20) ## io.instr(30 downto 21) ## B("0")
     io.operation := OpCode.NOOP
     io.outInstrFormat := InstrFormat.UNDEF
-    // io.outInstrFormat := InstrFormat.UNDEF
 
     
     val decodeInstrBits = new Area{
         val opcode = io.instr(6 downto 0)
         val funct3 = io.instr(14 downto 12)
         val funct7 = io.instr(31 downto 25)
-        // val itype = InstrFormat() 
         switch(opcode) {
             // I-Type Instructions
             // 3
-            //
             is(B"0000011") {
                 switch(funct3) {
                     io.outInstrFormat:= InstrFormat.I
@@ -139,7 +128,5 @@ case class Decode() extends Component {
 
     }
     
-    // println(testopcode.toString())
-
     
 }

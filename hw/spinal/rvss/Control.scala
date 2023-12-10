@@ -29,6 +29,7 @@ case class Control() extends Component {
 
     val decode = new Decode()
     decode.io.instr := io.instrucion
+    io.immItype := decode.io.outInstrFormat
     when(decode.io.outInstrFormat === InstrFormat.R) {
         io.ALUSrc := False
         io.regWrite := True

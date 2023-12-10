@@ -7,62 +7,47 @@ import OpCode._
 object MyTopLevelSim extends App {
   Config.sim.withWave.compile(new RVSS()).doSim("riscv-test") { dut =>
 
-    val testBench = Seq (
-      BigInt("00000000010100000000000100010011",2), // addi x2, x0, 5 \\ x2=5
-      BigInt("00000000110000000000000110010011",2), // addi x3, x0, 12 \\ x3 = 12
-      BigInt("11111111011100011000001110010011",2), // addi x7, x3, -9 \\ x7 = 3
-      BigInt("00000000001000111110001000110011",2), // or x4, x7, x2 \\ x4 = 7
-      BigInt("00000000010000011111001010110011",2), // and x5, x3, x4 \\ x5 = 4
-      BigInt("00000000010000101000001010110011",2),  // add x5, x5, x4 
-      // BigInt("0000000 00100 00101 000 00101 0110011",2),  // add x5, x5, x4 
-      // BigInt("00000000001000111010001000110011",2), // slt x4, x3, x4
-      // BigInt("0000000010100100000001110110011",2), // add x7, x4, x5 
-      // BigInt("0100000001000111000001110110011",2), // sub x7, x7, x2
-      // BigInt("00001010011100011010010000100011",2), // sw x7, 84(x3)
-      // BigInt("00000110000000000010000100000011",2), // lw x2, 96(x0)
-      // BigInt("00000000010100010000010010110011",2), // add x9, x2, x5
-      // BigInt("00000000000100000000000100010011",2), // addi x2, x0, 1
-      // BigInt("00000000100100010000000100110011",2), // add x2, x2, x9
-      // BigInt("00000010001000011010000000100011",2), // sw x2, 0x20(x3)
-    )
-
-    val testBenchHex = Seq (
-      BigInt("00500113",16),
-      BigInt("00C00193",16),
-      // BigInt("FF718393",16),
-      // BigInt("0023E233",16),
-      // BigInt("0041F2B3",16),
-      // BigInt("004282B3",16),
-      // BigInt("02728863",16),
-      // BigInt("0041A233",16),
-      // BigInt("00020463",16),
-      // BigInt("00000293",16),
-      // BigInt("0023A233",16),
-      // BigInt("005203B3",16),
-      // BigInt("402383B3",16),
-      // BigInt("0471AA23",16),
-      // BigInt("06002103",16),
-      // BigInt("005104B3",16),
-      // BigInt("008001EF",16),
-      // BigInt("00100113",16),
-      // BigInt("00910133",16),
-      // BigInt("0221A023",16),
-      // BigInt("00210063",16),
+      val testBenchHex = Seq (
+      BigInt("00500113",16),   // addi x2, x0, 5      # x2 = 5
+      BigInt("00C00193",16),   // addi x3, x0, 12     # x3 = 12
+      BigInt("FF718393",16),   // addi x7, x3, -9     # x7 = (12 - 9) = 3
+      BigInt("0023E233",16),   // or x4, x7, x2       # x4 = (3 OR 5) = 7 
+      BigInt("0041F2B3",16),   // and x5, x3, x4      # x5 = (12 AND 7) = 4 
+      BigInt("004282B3",16),   // add x5, x5, x4      # x5 = (12 AND 7) = 4 
+      BigInt("02728863",16),   // beq x5, x7, end     # shouldn't be taken 
+      BigInt("0041A233",16),   // slt x4, x3, x4      # x4 = (12 < 7) = 0 
+      BigInt("00020463",16),   // beq x4, x0, around  # should be taken
+      BigInt("00000293",16),   // addi x5, x0, 0      # shouldn't execute
+      BigInt("0023A233",16),   // slt x4, x7, x2      # x4 = (3 < 5) = 1
+      BigInt("005203B3",16),   // add x7, x4, x5      # x7 = (1 + 11) = 12
+      BigInt("402383B3",16),   // sub x7, x7, x2      # x7 = (12 - 5) = 7 
+      BigInt("0471AA23",16),   // sw x7, 84(x3)       # [96] = 7
+      BigInt("06002103",16),   // lw x2, 96(x0)       # x2 = [96] = 7 
+      BigInt("005104B3",16),   // add x9, x2, x5      # x9 = (7 + 11) = 18
+      BigInt("008001EF",16),   // jal x3, end         # jump to end, x3 = 0x44
+      BigInt("00100113",16),   // addi x2, x0, 1      # shouldn't execute 
+      BigInt("00910133",16),   // add x2, x2, x9      # x2 = (7 + 18) = 25
+      BigInt("0221A023",16),   // sw x2, 0x20(x3)     # x2 = (7 + 18) = 25
+      BigInt("00210063",16),   // beq x2, x2, done    # infinite loop
 
     )
     dut.datapath.memory.dataMemory.simPublic()
     dut.datapath.fetch.instructionMemory.simPublic()
-    for((instr, index) <- testBench.zipWithIndex) {
+    
+    // LOAD TEST INTO INSTR MEM
+    for((instr, index) <- testBenchHex.zipWithIndex) {
       dut.datapath.fetch.instructionMemory.setBigInt(index, instr)
     }
-    dut.clockDomain.forkStimulus(50)
-    // for((instr,index) <- testBench.zipWithIndex) {
-      // print(BigInt("00500113",16).toString(16))
-      // print(dut.datapath.fetch.instructionMemory.getBigInt(index).toString(16))
-    // }
+    dut.clockDomain.forkStimulus(10)
 
-    for (instr <- testBench) {
-      dut.clockDomain.waitSampling(50)
+    for (instr <- testBenchHex) {
+      dut.clockDomain.waitSampling(10)
+      // dut.datapath.fetch.io.instruction #= instr
+      // 
+      // dut.clockDomain.risingEdge()
+      // sleep(200)
+      // dut.clockDomain.fallingEdge()
+      // sleep(200)
       // println(s"ALU SRCA: ${dut.datapath.alu.io.SrcA.toInt}")
       // println(s"ALU SRCB: ${dut.datapath.alu.io.SrcB.toInt}")
       println(s"opcode: ${dut.control.decode.io.operation.toEnum}")
@@ -76,7 +61,7 @@ object MyTopLevelSim extends App {
       println(s"x8: ${dut.datapath.datapathDecode.regFile.regFile.getBigInt(8)}")
       println(s"x9: ${dut.datapath.datapathDecode.regFile.regFile.getBigInt(9)}")
       println(s"readData1: ${dut.datapath.datapathDecode.regFile.io.readData1.toBigInt}")
-
+      // sleep(10)
       
     }
     // dut.clockDomain.waitSampling(10)
@@ -104,6 +89,13 @@ object ALUSim extends App {
     
     dut.io.SrcA #= BigInt("-5")
     dut.io.SrcB #= BigInt("10")
+    dut.io.ALUControl #= BigInt("000",2)
+    dut.clockDomain.waitSampling(20)
+    println(s"${dut.io.ALUResult.toBigInt}")
+    
+
+    dut.io.SrcA #= BigInt("12")
+    dut.io.SrcB #= BigInt("-9")
     dut.io.ALUControl #= BigInt("000",2)
     dut.clockDomain.waitSampling(20)
     println(s"${dut.io.ALUResult.toBigInt}")

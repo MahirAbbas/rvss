@@ -14,14 +14,14 @@ case class Memory() extends Component {
         val writeEnable = in Bool()
         val resultSrc = in Bool()
     }
-    io.result := S"0".resized
+    // io.result := S"0".resized
     //
-    val dataMemory = Mem(SInt(32 bits), 256) simPublic()
+    val dataMemory = Mem(SInt(32 bits), 256).init(Seq.fill(256)(S(0,32 bits))) simPublic()
     when(io.writeEnable) {
         dataMemory.write(io.aluResult.asUInt.resize(8), io.writeData)
     }
-    when(!io.writeEnable) {
-        io.result := Mux(io.resultSrc, io.aluResult, dataMemory.readSync(io.aluResult.asUInt.resize(8))) 
-    }
+    // when(!io.writeEnable) {
+        io.result := dataMemory.readSync(io.aluResult.asUInt.resize(8))
+    // }
 
 }

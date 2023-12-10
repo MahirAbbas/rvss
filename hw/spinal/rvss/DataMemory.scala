@@ -12,12 +12,12 @@ case class DataMemory() extends Component {
    } 
     
    val dataMemory = Mem(SInt(32 bits), wordCount = 256)
-   io.readData := S"0".resized
+//    io.readData := S"0".resized
     when(io.writeEnable) {
         dataMemory.write(io.address.asUInt, io.writeData)
         
     }
-    when(!io.writeEnable) {
+    // when(!io.writeEnable) {
         io.readData := dataMemory.readSync(io.address.asUInt)
-    }
+    // }
 }
