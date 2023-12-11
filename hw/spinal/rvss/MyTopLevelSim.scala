@@ -18,7 +18,7 @@ object MyTopLevelSim extends App {
       BigInt("02728863",16),   // beq x5, x7, end     # shouldn't be taken 
       BigInt("0041A233",16),   // slt x4, x3, x4      # x4 = (12 < 7) = 0 
       BigInt("00020463",16),   // beq x4, x0, around  # should be taken
-      BigInt("00000293",16),   // addi x5, x0, 0      # shouldn't execute
+      // BigInt("00000293",16),   // addi x5, x0, 0      # shouldn't execute
       // BigInt("0023A233",16),   // slt x4, x7, x2      # x4 = (3 < 5) = 1
       // BigInt("005203B3",16),   // add x7, x4, x5      # x7 = (1 + 11) = 12
       // BigInt("402383B3",16),   // sub x7, x7, x2      # x7 = (12 - 5) = 7 
