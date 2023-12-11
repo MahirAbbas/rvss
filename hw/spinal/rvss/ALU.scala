@@ -8,9 +8,13 @@ case class ALU() extends Component {
         val SrcA, SrcB = in SInt(32 bits) simPublic()
         val ALUControl = in UInt(3 bits)
         val ALUResult = out Bits(32 bits)
+        val zero = out Bool()
     }
     io.ALUResult := B"0".resize(32)
-    
+    io.zero := False 
+    when(io.ALUResult === 0){
+        io.zero := True
+    }
     switch (io.ALUControl){
         // ADD
         is(U"000") {

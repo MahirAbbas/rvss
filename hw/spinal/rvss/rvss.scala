@@ -21,6 +21,7 @@ case class RVSS() extends Component {
     datapath.io.ALUControl := control.io.ALUControl
     datapath.io.ALUSrc := control.io.ALUSrc
     datapath.io.RegWrite := control.io.regWrite
+    control.io.zero := datapath.io.zero
 
 }
 

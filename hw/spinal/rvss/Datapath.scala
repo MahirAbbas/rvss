@@ -16,12 +16,16 @@ case class Datapath() extends Component {
         val RegWrite = in Bool()
         val itype = in(InstrFormat())
         val instruction = out Bits(32 bits)
+        val zero = out Bool()
     }
     
     val fetch = new Fetch()
     val datapathDecode = new  DatapathDecode()
     val execute = new Execute()
     val memory = new Memory()
+    
+    
+    io.zero := execute.io.zero
 
     //*****************************************
     //Connect Fetch to Decode
@@ -52,6 +56,14 @@ case class Datapath() extends Component {
 
     datapathDecode.io.WD3E := Mux(io.ResultSrc,memory.io.result.asBits, execute.io.aluResult.asBits)
 
+    
+
+    // CONNECT FETCH TO BRANCH TARGET
+    // 
+    val PCTarget = UInt(32 bits)
+    fetch.io.branch := io.PCSrc
+    PCTarget := fetch.io.PC + datapathDecode.io.extended.asUInt
+    fetch.io.branchTarget := PCTarget
 
     
     

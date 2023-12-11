@@ -17,7 +17,7 @@ case class Control() extends Component {
         val ALUSrc = out Bool()
         val immItype = out(InstrFormat())
         val regWrite = out Bool()
-
+        val zero = in Bool()
         
     }
 
@@ -26,6 +26,7 @@ case class Control() extends Component {
     io.memWrite := False
     io.resultSrc := False
     io.regWrite := False
+    io.PCSrc := False
 
     val decode = new Decode()
     decode.io.instr := io.instrucion
@@ -60,19 +61,11 @@ case class Control() extends Component {
     //     io.regWrite := True
     // }
 
-    switch(decode.io.operation){
-        is(OpCode.LW, OpCode.SW){
-            io.ALUControl := U"000"
-            io.regWrite := True
-        }
-        is(OpCode.BEQ) {
-            io.ALUControl := U"001"
-        }
         when(decode.io.operation === OpCode.LW){
            io.regWrite := True
            io.ALUSrc := True
            io.memWrite := False
-           io.resultSrc := True
+           io.resultSrc := False
             
         }
         when(decode.io.operation === OpCode.SW){
@@ -85,13 +78,16 @@ case class Control() extends Component {
             io.regWrite := False
             io.memWrite := False
             io.ALUSrc := False
+            io.ALUControl := U"001"
+            when(io.zero){
+            io.PCSrc := True
+            }
         }
         when(decode.io.operation === OpCode.JAL){
             io.regWrite := True
             io.memWrite := False
             // ADD result source fig 7.15
         }
-    }
 
     
     

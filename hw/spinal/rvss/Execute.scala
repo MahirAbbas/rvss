@@ -11,6 +11,7 @@ class Execute() extends Component{
         val aluControl = in UInt(3 bits)
         val RD2WriteData = out Bits(32 bits)
         val aluResult = out SInt(32 bits)
+        val zero = out Bool()
     }
     val alu = new ALU()
     alu.io.SrcA := io.RD1E
@@ -18,7 +19,9 @@ class Execute() extends Component{
     alu.io.ALUControl := io.aluControl
     io.aluResult := alu.io.ALUResult.asSInt
     io.RD2WriteData := io.RD2E.asBits
+    io.zero := alu.io.zero
         // DO BRANCH LOGIC
         // PCTARGET
+        // 
         
     }

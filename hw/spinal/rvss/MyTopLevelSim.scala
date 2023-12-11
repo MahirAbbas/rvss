@@ -8,29 +8,36 @@ object MyTopLevelSim extends App {
   Config.sim.withWave.compile(new RVSS()).doSim("riscv-test") { dut =>
 
       val testBenchHex = Seq (
+        //MAKE SURE TEST BECNH IS CORRECT
       BigInt("00500113",16),   // addi x2, x0, 5      # x2 = 5
       BigInt("00C00193",16),   // addi x3, x0, 12     # x3 = 12
       BigInt("FF718393",16),   // addi x7, x3, -9     # x7 = (12 - 9) = 3
       BigInt("0023E233",16),   // or x4, x7, x2       # x4 = (3 OR 5) = 7 
       BigInt("0041F2B3",16),   // and x5, x3, x4      # x5 = (12 AND 7) = 4 
-      BigInt("004282B3",16),   // add x5, x5, x4      # x5 = (12 AND 7) = 4 
+      BigInt("004282B3",16),   // add x5, x5, x4      # x5 = 4 + 7 = 11 
       BigInt("02728863",16),   // beq x5, x7, end     # shouldn't be taken 
       BigInt("0041A233",16),   // slt x4, x3, x4      # x4 = (12 < 7) = 0 
       BigInt("00020463",16),   // beq x4, x0, around  # should be taken
       BigInt("00000293",16),   // addi x5, x0, 0      # shouldn't execute
-      BigInt("0023A233",16),   // slt x4, x7, x2      # x4 = (3 < 5) = 1
-      BigInt("005203B3",16),   // add x7, x4, x5      # x7 = (1 + 11) = 12
-      BigInt("402383B3",16),   // sub x7, x7, x2      # x7 = (12 - 5) = 7 
-      BigInt("0471AA23",16),   // sw x7, 84(x3)       # [96] = 7
-      BigInt("06002103",16),   // lw x2, 96(x0)       # x2 = [96] = 7 
-      BigInt("005104B3",16),   // add x9, x2, x5      # x9 = (7 + 11) = 18
-      BigInt("008001EF",16),   // jal x3, end         # jump to end, x3 = 0x44
-      BigInt("00100113",16),   // addi x2, x0, 1      # shouldn't execute 
-      BigInt("00910133",16),   // add x2, x2, x9      # x2 = (7 + 18) = 25
-      BigInt("0221A023",16),   // sw x2, 0x20(x3)     # x2 = (7 + 18) = 25
-      BigInt("00210063",16),   // beq x2, x2, done    # infinite loop
+      // BigInt("0023A233",16),   // slt x4, x7, x2      # x4 = (3 < 5) = 1
+      // BigInt("005203B3",16),   // add x7, x4, x5      # x7 = (1 + 11) = 12
+      // BigInt("402383B3",16),   // sub x7, x7, x2      # x7 = (12 - 5) = 7 
+      // BigInt("0471AA23",16),   // sw x7, 84(x3)       # [96] = 7
+      // BigInt("06002103",16),   // lw x2, 96(x0)       # x2 = [96] = 7 
+      // BigInt("005104B3",16),   // add x9, x2, x5      # x9 = (7 + 11) = 18
+      // BigInt("008001EF",16),   // jal x3, end         # jump to end, x3 = 0x44
+      // BigInt("00100113",16),   // addi x2, x0, 1      # shouldn't execute 
+      // BigInt("00910133",16),   // add x2, x2, x9      # x2 = (7 + 18) = 25
+      // BigInt("0221A023",16),   // sw x2, 0x20(x3)     # x2 = (7 + 18) = 25
+      // BigInt("00210063",16),   // beq x2, x2, done    # infinite loop
 
     )
+    // val testBenchExample = Seq (
+    //   BigInt("FFC4A303",16),
+    //   BigInt("0064A423",16),
+    //   BigInt("0062E233",16),
+    //   BigInt("FE420AE3",16),
+    // )
     dut.datapath.memory.dataMemory.simPublic()
     dut.datapath.fetch.instructionMemory.simPublic()
     

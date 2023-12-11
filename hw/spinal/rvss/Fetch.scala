@@ -10,6 +10,7 @@ class Fetch() extends Component{
         val branch = in Bool() 
         val branchTarget = in UInt(32 bits)
         val instruction = out Bits(32 bits) simPublic()
+        val PC = out UInt(32 bits)
     }
     val instructionMemory = Mem(Bits(32 bits), 256).init(Seq.fill(256)(B(0,32 bits))) simPublic()
     val programCounter = Reg(UInt(32 bits)) init(0)
@@ -20,5 +21,6 @@ class Fetch() extends Component{
     PCNext := Mux(io.branch : Bool, io.branchTarget, PCPlus4.value) 
     programCounter := PCNext
     io.instruction := instructionMemory.readSync(programCounter(31 downto 0).resize(8))
+    io.PC := programCounter
 
 }
