@@ -17,9 +17,9 @@ class Fetch() extends Component{
     
     val programCounter = Reg(UInt(32 bits)) init(0)
     val PCNext = UInt(32 bits)
-    val PCPlus4 = Counter(32 bits)
-    PCPlus4.increment()
-    PCNext := Mux(io.branch : Bool, io.branchTarget, PCPlus4.value) 
+    val PCPlus4 = UInt(32 bits)
+    PCPlus4 := programCounter + 1
+    PCNext := Mux(io.branch : Bool, io.branchTarget, PCPlus4) 
     when(io.branch){
         
         PCPlus4 := io.branchTarget

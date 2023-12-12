@@ -11,7 +11,7 @@ case class Control() extends Component {
     val io = new Bundle {
         val instrucion = in Bits(32 bits)
         val PCSrc = out Bool()
-        val resultSrc = out Bool()
+        val resultSrc = out UInt(2 bits)
         val memWrite = out Bool()
         val ALUControl = out UInt(3 bits)
         val ALUSrc = out Bool()
@@ -24,7 +24,7 @@ case class Control() extends Component {
     io.ALUControl := U"000"
     io.ALUSrc := False
     io.memWrite := False
-    io.resultSrc := False
+    io.resultSrc := U"00"
     io.regWrite := False
     io.PCSrc := False
 
@@ -35,14 +35,14 @@ case class Control() extends Component {
         io.ALUSrc := False
         io.regWrite := True
         io.memWrite := False
-        io.resultSrc := False
+        io.resultSrc := U"00"
         
     }
     when(decode.io.outInstrFormat === InstrFormat.I) {
         io.ALUSrc := True
         io.regWrite := True
         io.memWrite := False
-        io.resultSrc := False
+        io.resultSrc := U"00"
 
     }
     // when(decode.io.outInstrFormat === InstrFormat.S) {
@@ -65,13 +65,14 @@ case class Control() extends Component {
            io.regWrite := True
            io.ALUSrc := True
            io.memWrite := False
-           io.resultSrc := True
+           io.resultSrc := U"01"
             
         }
         when(decode.io.operation === OpCode.SW){
             io.regWrite := False
             io.memWrite := True
-            io.ALUSrc := True 
+            io.ALUSrc := True
+            io.ALUControl := U"000" 
             
         }
         when(decode.io.operation === OpCode.BEQ){
@@ -86,6 +87,8 @@ case class Control() extends Component {
         when(decode.io.operation === OpCode.JAL){
             io.regWrite := True
             io.memWrite := False
+            io.PCSrc := True
+            io.resultSrc := U"10"
             // ADD result source fig 7.15
         }
 

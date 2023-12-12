@@ -9,7 +9,7 @@ case class Datapath() extends Component {
     
     val io = new Bundle {
         val PCSrc = in Bool()
-        val ResultSrc = in Bool()
+        val ResultSrc = in UInt(2 bits)
         val MemWrite = in Bool()
         val ALUControl = in UInt(3 bits)
         val ALUSrc = in Bool()
@@ -47,7 +47,8 @@ case class Datapath() extends Component {
     
     //*****************************************
     //Connect Execute to DataMemory
-    memory.io.writeEnable := io.MemWrite
+    memory.io.memWrite:= io.MemWrite
+
     // memory.io.resultSrc := memoryResultSrc
     memory.io.aluResult := execute.io.aluResult
     memory.io.writeData := execute.io.RD2E
@@ -57,7 +58,13 @@ case class Datapath() extends Component {
     // CONNECT ALU TO WD3E
     // CONNECT RD2 to DATAMEMORY
     // memory.io.writeData := execute.io.RD2E
-    datapathDecode.io.WD3E := Mux(io.ResultSrc,memory.io.result.asBits, execute.io.aluResult.asBits)
+    datapathDecode.io.WD3E := io.ResultSrc.mux(
+        0 -> execute.io.aluResult.asBits,
+        1 -> memory.io.result.asBits,
+        2 -> (fetch.io.PC ).asBits,
+        default -> execute.io.aluResult.asBits
+    )
+    // (io.ResultSrc,memory.io.result.asBits, execute.io.aluResult.asBits)
 
     
 

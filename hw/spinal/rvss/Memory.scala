@@ -11,13 +11,13 @@ case class Memory() extends Component {
         val aluResult = in SInt(32 bits)
         val writeData = in SInt(32 bits)
         val result = out SInt(32 bits)
-        val writeEnable = in Bool()
+        val memWrite = in Bool()
         val resultSrc = in Bool()
     }
     // io.result := S"0".resized
     //
     val dataMemory = Mem(SInt(32 bits), 256).init(Seq.fill(256)(S(0,32 bits))) simPublic()
-    when(io.writeEnable) {
+    when(io.memWrite) {
         dataMemory.write(io.aluResult.asUInt.resize(8), io.writeData)
     }
     // when(!io.writeEnable) {
