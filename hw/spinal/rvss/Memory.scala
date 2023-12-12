@@ -21,7 +21,7 @@ case class Memory() extends Component {
         dataMemory.write(io.aluResult.asUInt.resize(8), io.writeData)
     }
     // when(!io.writeEnable) {
-        io.result := dataMemory.readSync(io.aluResult.asUInt.resize(8))
+        io.result := dataMemory.readAsync(io.aluResult.asUInt.resize(8))
     // }
 
 }

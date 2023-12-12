@@ -20,9 +20,12 @@ class Fetch() extends Component{
     val PCPlus4 = Counter(32 bits)
     PCPlus4.increment()
     PCNext := Mux(io.branch : Bool, io.branchTarget, PCPlus4.value) 
-    when(io.branch){PCPlus4 := io.branchTarget}
+    when(io.branch){
+        
+        PCPlus4 := io.branchTarget
+    }
     programCounter := PCNext
-    io.instruction := instructionMemory.readSync(programCounter(31 downto 0).resize(8))
+    io.instruction := instructionMemory.readAsync(programCounter(31 downto 0).resize(8))
     io.PC := programCounter
 
 }

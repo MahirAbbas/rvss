@@ -54,6 +54,9 @@ case class Datapath() extends Component {
 
     
 
+    // CONNECT ALU TO WD3E
+    // CONNECT RD2 to DATAMEMORY
+    // memory.io.writeData := execute.io.RD2E
     datapathDecode.io.WD3E := Mux(io.ResultSrc,memory.io.result.asBits, execute.io.aluResult.asBits)
 
     
@@ -61,8 +64,9 @@ case class Datapath() extends Component {
     // CONNECT FETCH TO BRANCH TARGET
     // 
     val PCTarget = UInt(32 bits)
+    val branch_immediate = UInt(32 bits)
     fetch.io.branch := io.PCSrc
-    PCTarget := fetch.io.PC + datapathDecode.io.extended.asUInt
+    PCTarget := fetch.io.PC + (datapathDecode.io.extended.asUInt / 4)
     fetch.io.branchTarget := PCTarget
 
     

@@ -65,7 +65,7 @@ case class Control() extends Component {
            io.regWrite := True
            io.ALUSrc := True
            io.memWrite := False
-           io.resultSrc := False
+           io.resultSrc := True
             
         }
         when(decode.io.operation === OpCode.SW){
