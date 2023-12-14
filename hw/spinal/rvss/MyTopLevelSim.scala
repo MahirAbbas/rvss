@@ -45,34 +45,39 @@ object MyTopLevelSim extends App {
     for((instr, index) <- testBenchHex.zipWithIndex) {
       dut.datapath.fetch.instructionMemory.setBigInt(index, instr)
     }
-    dut.clockDomain.forkStimulus(10)
+    dut.clockDomain.forkStimulus(9)
 
-    for (instr <- testBenchHex) {
-      dut.clockDomain.waitSampling(10)
-      // dut.datapath.fetch.io.instruction #= instr
-      // 
-      // dut.clockDomain.risingEdge()
-      // sleep(200)
-      // dut.clockDomain.fallingEdge()
-      // sleep(200)
-      // println(s"ALU SRCA: ${dut.datapath.alu.io.SrcA.toInt}")
-      // println(s"ALU SRCB: ${dut.datapath.alu.io.SrcB.toInt}")
-      println(s"opcode: ${dut.control.decode.io.operation.toEnum}")
-      println(s"x1: ${dut.datapath.datapathDecode.regFile.regFile.getBigInt(1)}")
-      println(s"x2: ${dut.datapath.datapathDecode.regFile.regFile.getBigInt(2)}")
-      println(s"x3: ${dut.datapath.datapathDecode.regFile.regFile.getBigInt(3)}")
-      println(s"x4: ${dut.datapath.datapathDecode.regFile.regFile.getBigInt(4)}")
-      println(s"x5: ${dut.datapath.datapathDecode.regFile.regFile.getBigInt(5)}")
-      println(s"x6: ${dut.datapath.datapathDecode.regFile.regFile.getBigInt(6)}")
-      println(s"x7: ${dut.datapath.datapathDecode.regFile.regFile.getBigInt(7)}")
-      println(s"x8: ${dut.datapath.datapathDecode.regFile.regFile.getBigInt(8)}")
-      println(s"x9: ${dut.datapath.datapathDecode.regFile.regFile.getBigInt(9)}")
-      println(s"DataMemory[100]: ${dut.datapath.memory.dataMemory.getBigInt(48)}")
-      // println(s"readData1: ${dut.datapath.datapathDecode.regFile.io.readData1.toBigInt}")
-      // sleep(10)
+    dut.clockDomain.waitSampling(50)
+
+
+
+    // for (instr <- testBenchHex) {
+    //   dut.clockDomain.waitSampling(10)
+    //   // dut.datapath.fetch.io.instruction #= instr
+    //   // 
+    //   // dut.clockDomain.risingEdge()
+    //   // sleep(200)
+    //   // dut.clockDomain.fallingEdge()
+    //   // sleep(200)
+    //   // println(s"ALU SRCA: ${dut.datapath.alu.io.SrcA.toInt}")
+    //   // println(s"ALU SRCB: ${dut.datapath.alu.io.SrcB.toInt}")
+    //   println(s"opcode: ${dut.control.decode.io.operation.toEnum}")
+    //   println(s"x1: ${dut.datapath.datapathDecode.regFile.regFile.getBigInt(1)}")
+    //   println(s"x2: ${dut.datapath.datapathDecode.regFile.regFile.getBigInt(2)}")
+    //   println(s"x3: ${dut.datapath.datapathDecode.regFile.regFile.getBigInt(3)}")
+    //   println(s"x4: ${dut.datapath.datapathDecode.regFile.regFile.getBigInt(4)}")
+    //   println(s"x5: ${dut.datapath.datapathDecode.regFile.regFile.getBigInt(5)}")
+    //   println(s"x6: ${dut.datapath.datapathDecode.regFile.regFile.getBigInt(6)}")
+    //   println(s"x7: ${dut.datapath.datapathDecode.regFile.regFile.getBigInt(7)}")
+    //   println(s"x8: ${dut.datapath.datapathDecode.regFile.regFile.getBigInt(8)}")
+    //   println(s"x9: ${dut.datapath.datapathDecode.regFile.regFile.getBigInt(9)}")
+    //   println(s"DataMemory[100]: ${dut.datapath.memory.dataMemory.getBigInt(48)}")
+    //   // println(s"readData1: ${dut.datapath.datapathDecode.regFile.io.readData1.toBigInt}")
+    //   // sleep(10)
       
-    }
+    // }
     // dut.clockDomain.waitSampling(10)
+      println(s"DataMemory[100]: ${dut.datapath.memory.dataMemory.getBigInt(48)}")
     //   println(s"x9: ${dut.datapath.regFile.regFile.getBigInt(9)}")
   }
 }
