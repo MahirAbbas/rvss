@@ -38,10 +38,10 @@ bin/
 /*.v
 *.cf
 *.json
-# *.vcd
+*.vcd
 !tester/src/test/resources/*.vhd
 
 
-# simWorkspace/
+simWorkspace/
 tmp/
 null
