@@ -29,3 +29,9 @@ case class RVSS() extends Component {
 object RVSSVerilog extends App {
     Config.spinal.generateVerilog(RVSS())
 }
+
+object Main {
+    def main(args : Array[String]) {
+        SpinalVerilog(new RVSS()).printPruned()
+    }
+}
