@@ -4,7 +4,6 @@ import spinal.core._
 import spinal.core.sim._
 import spinal.lib._
 import OpCode._
-import spinal.lib.misc.pipeline._
 
 case class Datapath() extends Component {
     
@@ -20,45 +19,10 @@ case class Datapath() extends Component {
         val zero = out Bool()
     }
     
+    val fetch = new Fetch()
+    val datapathDecode = new  DatapathDecode()
+    val execute = new Execute()
     val memory = new Memory()
-    
-    val builder = new NodesBuilder()
-    
-
-    val INSTRUCTION = Payload(Bits(32 bits))
-    val PC = Payload(UInt(32 bits))
-    
-    
-    val FETCH = new builder.Node{
-        val fetch = new Fetch()
-        INSTRUCTION := fetch.io.instruction
-        
-    }
-
-    val RD1E, RD2E = Payload(SInt(32 bits))
-    val IMMEXT = Payload(SInt(32 bits))
-
-    val DECODE = new builder.Node{
-        val datapathDecode = new  DatapathDecode()
-        RD1E := datapathDecode.regFile.io.readAddress1.asSInt
-        RD2E := datapathDecode.regFile.io.readAddress2.asSInt
-        IMMEXT := datapathDecode.io.extended
-    }
-    
-    
-    val EXECUTE = new builder.Node{
-        val execute = new Execute()
-        execute.io.RD1E := RD1E
-        execute.io.RD2E := RD2E
-        execute.io.immExt := IMMEXT
-
-    }
-
-
-    
-    
-
-
     
     
     io.zero := execute.io.zero
