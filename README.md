@@ -5,7 +5,3 @@ The design is from Harris & Harris RISC-V Edition
 
 
 this is bad code
-
-
-final implementation should look like
-![](5_stage_pipeline_with_hazard.png)
