@@ -37,6 +37,7 @@ case class Datapath() extends Component {
 
     val RD1E, RD2E = Payload(SInt(32 bits))
     val IMMEXT = Payload(SInt(32 bits))
+    val RD = Payload(SInt(5 bits))
 
     val DECODE = new builder.Node{
         val datapathDecode = new  DatapathDecode()
@@ -51,7 +52,6 @@ case class Datapath() extends Component {
         execute.io.RD1E := RD1E
         execute.io.RD2E := RD2E
         execute.io.immExt := IMMEXT
-
     }
 
 
