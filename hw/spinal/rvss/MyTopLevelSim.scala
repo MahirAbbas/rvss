@@ -3,6 +3,8 @@ package rvss
 import spinal.core._
 import spinal.core.sim._
 import OpCode._
+import Execute.ALU
+import Decode.Decode
 
 object MyTopLevelSim extends App {
   Config.sim.withWave.compile(new RVSS()).doSim("riscv-test") { dut =>

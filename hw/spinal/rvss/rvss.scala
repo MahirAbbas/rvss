@@ -3,7 +3,7 @@ package rvss
 
 import spinal.core._
 import spinal.lib._
-import OpCode._
+// import OpCode._
 import rvss._
 
 
@@ -12,6 +12,7 @@ case class RVSS() extends Component {
 
     val control = new Control()
     val datapath = new Datapath()
+    import Datapath._
 
     control.io.instrucion := datapath.io.instruction
     datapath.io.itype := control.io.immItype

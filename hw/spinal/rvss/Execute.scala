@@ -1,6 +1,7 @@
 package rvss
 
 import spinal.core._
+import Execute.ALU
 
 class Execute() extends Component{
     val io = new Bundle {

@@ -5,9 +5,15 @@ import spinal.core._
 
 import OpCode._
 import spinal.lib.bus.bmb.Bmb
+import spinal.lib.misc.pipeline._
+import Decode.Decode
+
+object Control extends AreaObject{
+
+}
 
 
-case class Control() extends Component {
+case class Control() extends Area{
     val io = new Bundle {
         val instrucion = in Bits(32 bits)
         val PCSrc = out Bool()

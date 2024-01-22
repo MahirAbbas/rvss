@@ -1,9 +1,12 @@
-package rvss
+package rvss.Execute
 
 import spinal.core._
 import spinal.core.sim._
 
-case class ALU() extends Component {
+object IntAlu extends AreaObject {
+
+}
+case class ALU() extends Area {
     val io = new Bundle {
         val SrcA, SrcB = in SInt(32 bits) simPublic()
         val ALUControl = in UInt(3 bits)

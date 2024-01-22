@@ -4,8 +4,29 @@ import spinal.core._
 import spinal.core.sim._
 import spinal.lib._
 import OpCode._
+import spinal.lib.misc.pipeline._
 
-case class Datapath() extends Component {
+// object Datapath extends AreaObject {
+//     val INSTRUCTION = Payload(Bits(32 bits))
+//     val RD1, RD2 = Payload(SInt(32 bits))
+//     val WRITEADDRESS = Payload(UInt(5 bits))
+//     val REGISTERDESTINATION = Payload(UInt(5 bits))
+//     val IMMEXT = Payload(SInt(32 bits))
+//     val PCPLUS4 = Payload(UInt(32 bits))
+//     val ALURESULT = Payload(SInt(32 bits))
+//     val WRITEDATA = Payload(SInt(32 bits))
+//     val ITYPE = Payload(InstrFormat())
+//     val ALUSRC = Payload(Bool())
+//     val ALUCONTROL = Payload(UInt(3 bits))
+//     val MEMWRITE = Payload(Bool())
+//     val REGWRITE = Payload(Bool())
+//     val RESULTSRC = Payload(UInt(2 bits))
+
+
+// }
+
+case class Datapath() extends Area{
+    import Datapath._
     
     val io = new Bundle {
         val PCSrc = in Bool()
@@ -27,31 +48,58 @@ case class Datapath() extends Component {
     
     io.zero := execute.io.zero
 
-    //*****************************************
-    //Connect Fetch to Decode
-    datapathDecode.io.instr := fetch.io.instruction
-    io.instruction := fetch.io.instruction
-    datapathDecode.io.itype := io.itype
-    datapathDecode.io.writeEnable := io.RegWrite
+    val builder = new NodesBuilder()
 
+    // val FETCH, DECODE, EXECUTE, MEMORY = Node()
+    
+    val FETCH = new builder.Node {
+        INSTRUCTION := fetch.io.instruction
+    }
+    
 
-    //*****************************************
-    //Connect Decode to Execute
-    //
-    execute.io.RD1E := datapathDecode.io.RD1E
-    execute.io.RD2E := datapathDecode.io.RD2E
-    execute.io.immExt := datapathDecode.io.extended
-    execute.io.aluSrc := io.ALUSrc
-    execute.io.aluControl := io.ALUControl
+    val DECODE = new builder.Node {
+        datapathDecode.io.instr := INSTRUCTION
+        io.instruction := INSTRUCTION
+        datapathDecode.io.itype := ITYPE
+        RD1 := datapathDecode.io.RD1E
+        RD2 := datapathDecode.io.RD2E
+        IMMEXT := datapathDecode.io.extended
+        WRITEADDRESS := datapathDecode.io.instr(11 downto 7).asUInt
+        ALUSRC := io.ALUSrc
+        ALUCONTROL := io.ALUControl
+        MEMWRITE := io.MemWrite
+        RESULTSRC := io.ResultSrc
+        
+        
+    }
+    
+    val EXECUTE = new builder.Node {
+        execute.io.RD1E := RD1
+        execute.io.RD2E := RD2
+        execute.io.aluSrc := ALUSRC
+        execute.io.aluControl := ALUCONTROL
+        IMMEXT := execute.io.immExt
+        ALURESULT := execute.io.aluResult
+    }
+    
+
+    val MEMORY = new builder.Node {
+       memory.io.memWrite := MEMWRITE 
+       memory.io.aluResult := ALURESULT
+       memory.io.writeData := RD2
+    }
+    
+    builder.genStagedPipeline()
+    
 
     
     //*****************************************
     //Connect Execute to DataMemory
-    memory.io.memWrite:= io.MemWrite
+    // memory.io.memWrite:= io.MemWrite
 
     // memory.io.resultSrc := memoryResultSrc
-    memory.io.aluResult := execute.io.aluResult
-    memory.io.writeData := execute.io.RD2E
+    // memory.io.aluResult := execute.io.aluResult
+    // memory.io.writeData := execute.io.RD2E
 
     
 
@@ -83,4 +131,20 @@ case class Datapath() extends Component {
     // instructionBridge := fetch.io.instruction
     // datapathDecode.io.instr := instructionBridge
 
+    //*****************************************
+    //Connect Fetch to Decode
+    // datapathDecode.io.instr := fetch.io.instruction
+    // io.instruction := fetch.io.instruction
+    // datapathDecode.io.itype := io.itype
+    // datapathDecode.io.writeEnable := io.RegWrite
+
+
+    //*****************************************
+    //Connect Decode to Execute
+    //
+    // execute.io.RD1E := datapathDecode.io.RD1E
+    // execute.io.RD2E := datapathDecode.io.RD2E
+    // execute.io.immExt := datapathDecode.io.extended
+    // execute.io.aluSrc := io.ALUSrc
+    // execute.io.aluControl := io.ALUControl
 }
