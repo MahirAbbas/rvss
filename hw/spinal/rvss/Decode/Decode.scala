@@ -7,7 +7,7 @@ import spinal.lib.misc.pipeline._
 import rvss.riscv.{Riscv,OpCodes,Rv32IDecode,AluOps}
 
 object Decode extends AreaObject {
-    val REGWRITE   = Payload()
+    val REGWRITE   = Payload(Bool())
     val RESULTSRC  = Payload()
     val MEMWRITE   = Payload()
     val JUMP = Payload()
@@ -18,6 +18,7 @@ object Decode extends AreaObject {
 }
 
 case class Decode() extends Area{
+    import Decode._
     import Rv32IDecode._
     import rvss.riscv.OpCodes._
     val io = new Bundle {
@@ -28,6 +29,28 @@ case class Decode() extends Area{
     val register =  Reg(OpCode())
     io.operation := OpCode.NOOP
     io.outInstrFormat := InstrFormat.UNDEF
+    
+    // DO SOMETHING LIKE THOS
+    val instMap = Map(
+        ADD -> (Iformat.TypeR, ALU.ADD),
+        SUB -> (IFORMAT.TYPER, ALU.SUB)
+    )
+    switch(io.instruction) {
+        is(ADD, SUB, SLL, SLT, SLTU, XOR, SRL, SRA, OR, AND) {
+           val REGWRITE = True 
+        }
+    }
+    
+    switch(io.inst) {
+        import Inst._
+        for((inst, (format, aluop)) <- Inst.instMap) {
+            is(inst) {
+                val (formatSignal, imm) = format match {
+                    case InstrFormat.Rtype => (io.rtype, B(0))
+                }
+            }
+        }
+    }
     
 
     def getOpCode(instruction: MaskedLiteral) : SpinalEnum= {
