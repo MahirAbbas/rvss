@@ -3,8 +3,14 @@ package rvss
 import spinal.core._
 import spinal.core.sim._
 import spinal.lib._
-import OpCode._
+// import OpCode._
 import spinal.lib.misc.pipeline._
+import Execute._
+// import Fetch.Fetch._
+import Memory._
+import Fetch._
+import Decode._
+import DatapathDecode
 
 // object Datapath extends AreaObject {
 //     val INSTRUCTION = Payload(Bits(32 bits))
@@ -35,7 +41,7 @@ case class Datapath() extends Area{
         val ALUControl = in UInt(3 bits)
         val ALUSrc = in Bool()
         val RegWrite = in Bool()
-        val itype = in(InstrFormat())
+        // val itype = in(InstrFormat())
         val instruction = out Bits(32 bits)
         val zero = out Bool()
     }
@@ -52,42 +58,16 @@ case class Datapath() extends Area{
 
     // val FETCH, DECODE, EXECUTE, MEMORY = Node()
     
-    val FETCH = new builder.Node {
-        INSTRUCTION := fetch.io.instruction
-    }
+    val FETCH = new Fetch()
+    val DECODE = new Decode()
+    val EXECUTE = new Execute()
+    
+    val c01 = StageLink(DECODE, EXECUTE)
+
+
+   
     
 
-    val DECODE = new builder.Node {
-        datapathDecode.io.instr := INSTRUCTION
-        io.instruction := INSTRUCTION
-        datapathDecode.io.itype := ITYPE
-        RD1 := datapathDecode.io.RD1E
-        RD2 := datapathDecode.io.RD2E
-        IMMEXT := datapathDecode.io.extended
-        WRITEADDRESS := datapathDecode.io.instr(11 downto 7).asUInt
-        ALUSRC := io.ALUSrc
-        ALUCONTROL := io.ALUControl
-        MEMWRITE := io.MemWrite
-        RESULTSRC := io.ResultSrc
-        
-        
-    }
-    
-    val EXECUTE = new builder.Node {
-        execute.io.RD1E := RD1
-        execute.io.RD2E := RD2
-        execute.io.aluSrc := ALUSRC
-        execute.io.aluControl := ALUCONTROL
-        IMMEXT := execute.io.immExt
-        ALURESULT := execute.io.aluResult
-    }
-    
-
-    val MEMORY = new builder.Node {
-       memory.io.memWrite := MEMWRITE 
-       memory.io.aluResult := ALURESULT
-       memory.io.writeData := RD2
-    }
     
     builder.genStagedPipeline()
     

@@ -1,11 +1,12 @@
-package rvss
+package rvss.Fetch
 
 import spinal.core._
 import spinal.lib._
 import spinal.core.sim._
+import spinal.lib.misc.pipeline._
 
 
-class Fetch() extends Component{
+class Fetch() extends Node{
     val io = new Bundle {
         val branch = in Bool() 
         val branchTarget = in UInt(32 bits)

@@ -20,7 +20,7 @@ object Decode extends Node{
     val RD = Payload(UInt(5 bits))
 }
 
-case class Decode() extends Area{
+case class Decode() extends Node{
     import Decode._
     import Rv32IDecode._
     import rvss.riscv.OpCodes._
@@ -33,8 +33,8 @@ case class Decode() extends Area{
     
     val registerControl = new Area {
         val registers = new RegFile()
-        registers.io.readAddress1 := extended.rs1Range.asUInt
-        registers.io.readAddress2 := extended.rs2Range.asUInt
+        registers.io.readAddress1 := io.instruction(19 downto 15).asUInt
+        registers.io.readAddress2 := io.instruction(24 downto 20).asUInt
         RD1 := registers.io.readData1
         RD2 := registers.io.readData2
 

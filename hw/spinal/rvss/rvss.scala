@@ -5,6 +5,7 @@ import spinal.core._
 import spinal.lib._
 // import OpCode._
 import rvss._
+import Control
 
 
 case class RVSS() extends Component {
