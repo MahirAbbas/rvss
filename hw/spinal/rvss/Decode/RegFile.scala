@@ -1,10 +1,10 @@
-package rvss
+package rvss.Decode
 
 import spinal.core._
 import spinal.lib._
 import spinal.core.sim._
 
-case class RegFile() extends Component {
+case class RegFile() extends Area {
     val io = new Bundle {
         val writeEnable3 = in Bool()
         val readAddress1, readAddress2 = in UInt(5 bits)

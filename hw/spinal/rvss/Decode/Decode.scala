@@ -6,107 +6,95 @@ import spinal.core.sim._
 import spinal.lib.misc.pipeline._
 import rvss.riscv.{Riscv,OpCodes,Rv32IDecode,AluOps}
 
-object Decode extends AreaObject {
+object Decode extends Node{
     val REGWRITE   = Payload(Bool())
-    val RESULTSRC  = Payload()
-    val MEMWRITE   = Payload()
-    val JUMP = Payload()
-    val BRANCH = Payload()
-    val ALUCONTROL = Payload()
-    val ALUSRC = Payload()
-    val IMMSRC = Payload()
+    val RESULTSRC  = Payload(UInt(3 bits))
+    val MEMWRITE   = Payload(Bool())
+    val JUMP = Payload(Bool())
+    val BRANCH = Payload(Bool())
+    val ALUCONTROL = Payload(UInt(3 bits))
+    val ALUSRC = Payload(Bool())
+    // val IMMSRC = Payload()
+    val EXTENDED = Payload(SInt(32 bits))
+    val RD1, RD2 = Payload(Bits(32 bits))
+    val RD = Payload(UInt(5 bits))
 }
 
 case class Decode() extends Area{
     import Decode._
     import Rv32IDecode._
     import rvss.riscv.OpCodes._
+    import Riscv._
+    
+    
     val io = new Bundle {
         val instruction = in Bits(32 bits)
-        val operation = out(OpCode()) simPublic()
-        val outInstrFormat = out(InstrFormat())
     }
-    val register =  Reg(OpCode())
-    io.operation := OpCode.NOOP
-    io.outInstrFormat := InstrFormat.UNDEF
     
-    // DO SOMETHING LIKE THOS
-    val instMap = Map(
-        ADD -> (Iformat.TypeR, ALU.ADD),
-        SUB -> (IFORMAT.TYPER, ALU.SUB)
-    )
+    val registerControl = new Area {
+        val registers = new RegFile()
+        registers.io.readAddress1 := extended.rs1Range.asUInt
+        registers.io.readAddress2 := extended.rs2Range.asUInt
+        RD1 := registers.io.readData1
+        RD2 := registers.io.readData2
+
+    }
+     
+
+
+    val extended = IMM(io.instruction)
+    
     switch(io.instruction) {
         is(ADD, SUB, SLL, SLT, SLTU, XOR, SRL, SRA, OR, AND) {
-           val REGWRITE = True 
+           REGWRITE := True 
+           ALUSRC := False
+           MEMWRITE := False
+           RESULTSRC := U"00"
+           BRANCH := False
+           // DO ALU OPs
+
         }
-    }
-    
-    switch(io.inst) {
-        import Inst._
-        for((inst, (format, aluop)) <- Inst.instMap) {
-            is(inst) {
-                val (formatSignal, imm) = format match {
-                    case InstrFormat.Rtype => (io.rtype, B(0))
-                }
-            }
+        is(ADDI, SLTI, SLTIU, XORI, ORI, ANDI, SLLI, SRLI,SRAI ) {
+           REGWRITE := True 
+           ALUSRC := True
+           MEMWRITE := False
+           RESULTSRC := U"00"
+           BRANCH := False
+           EXTENDED := extended.i_sext
         }
-    }
-    
-
-    def getOpCode(instruction: MaskedLiteral) : SpinalEnum= {
-        instruction match {
-            case ADD   => OpCodes.ADD.toSpinalEnum
-            case SUB   => "SUB"
-            case SLL   => "SLL"
-            case SLT   => "SLT"
-            case SLTU  => "SLTU"
-            case XOR   => "XOR"
-            case SRL   => "SRL"
-            case SRA   => "SRA"
-            case OR    => "OR"
-            case AND   => "AND"
-            
-
-            case BEQ     => "BEQ"
-            case BNE     => "BNE"
-            case BLT     => "BLT"
-            case BGE     => "BGE"
-            case BLTU    => "BLTU"
-            case BGEU    => "BGEU"
-            case JALR    => "JALR"
-            case JAL     => "JAL"
-            case LUI     => "LUI"
-            case AUIPC   => "AUIPC"
-            
-            
-            case ADDI    => "ADDI"
-            case SLLI    => "SLLI"
-            case SLTI    => "SLTI"
-            case SLTIU   => "SLTIU"
-            case XORI    => "XORI"
-            case SRLI    => "SRLI"
-            case SRAI    => "SRAI"
-            case ORI     => "ORI"
-            case ANDI    => "ANDI"
-            
-        }        
-    }            
-    
-    def setCtrlSignals(instruction : MaskedLiteral) = {
-        val opcode = getOpCode(instruction)
-        switch(opcode) {
-            is("ADD")
-
+        is(LW) {
+           REGWRITE := True 
+           ALUSRC := True
+           MEMWRITE := False
+           RESULTSRC := U"01"
+           BRANCH := False
+           EXTENDED := extended.i_sext
+        }
+        is(SW) {
+           REGWRITE := False
+           ALUSRC := True
+           MEMWRITE := True
+           RESULTSRC := U"00"
+           BRANCH := False
+           EXTENDED := extended.s_sext
+        }
+        is(BEQ) {
+           REGWRITE := False
+           ALUSRC := False
+           MEMWRITE := False
+           RESULTSRC := U"00"
+           BRANCH := True
+           EXTENDED := extended.b_sext
+        }
+        is(JAL) {
+           REGWRITE := True
+           ALUSRC := True
+           MEMWRITE := False
+           RESULTSRC := U"10"
+           BRANCH := True
+           EXTENDED := extended.b_sext
         }
     }
 
-
-    
-    val decodeInstrBits = new Area{
-
-
-
-    }
-    
     
 }

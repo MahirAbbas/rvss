@@ -1,6 +1,7 @@
 package rvss
 
 import spinal.core._
+import Decode.RegFile
 
 
 class DatapathDecode() extends Component{

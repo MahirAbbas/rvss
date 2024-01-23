@@ -6,22 +6,22 @@ import spinal.core._
 object Riscv{
   
 
-  def funct7Range = 31 downto 25
-  def rdRange = 11 downto 7
-  def funct3Range = 14 downto 12
-  def rs1Range = 19 downto 15
-  def rs2Range = 24 downto 20
-  def rs3Range = 31 downto 27
   
 
   case class IMM(instruction: Bits) extends Area {
 
+    def funct7Range = 31 downto 25
+    def rdRange = 11 downto 7
+    def funct3Range = 14 downto 12
+    def rs1Range = 19 downto 15
+    def rs2Range = 24 downto 20
+    def rs3Range = 31 downto 27
 
-    val i = instruction(31 downto 20) 
-    val s = instruction(31 downto 25) ## instruction(11 downto 7)
-    val b = instruction(31) ## instruction(7) ## instruction(30 downto 25) ## instruction(11 downto 8) ## B("0")
-    val u = instruction(31 downto 12)
-    val j = instruction(31) ## instruction(19 downto 12) ## instruction(20) ## instruction(30 downto 21) ## B("0")
+    def i = instruction(31 downto 20) 
+    def s = instruction(31 downto 25) ## instruction(11 downto 7)
+    def b = instruction(31) ## instruction(7) ## instruction(30 downto 25) ## instruction(11 downto 8) ## B("0")
+    def u = instruction(31 downto 12)
+    def j = instruction(31) ## instruction(19 downto 12) ## instruction(20) ## instruction(30 downto 21) ## B("0")
     
 
 
@@ -34,19 +34,24 @@ object Riscv{
 
   }
 }
-object OpCodes extends SpinalEnum{
+object OpCodes {
   
+  // B-type instruction
   val BEQ                = M"-----------------000-----1100011"
   val BNE                = M"-----------------001-----1100011"
   val BLT                = M"-----------------100-----1100011"
   val BGE                = M"-----------------101-----1100011"
   val BLTU               = M"-----------------110-----1100011"
   val BGEU               = M"-----------------111-----1100011"
+  // I-type instrcuction
   val JALR               = M"-----------------000-----1100111"
+  // J-type instruction
   val JAL                = M"-------------------------1101111" 
+  // U-type instructions
   val LUI                = M"-------------------------0110111"
   val AUIPC              = M"-------------------------0010111"
 
+  // R-Type instructions
   val ADD                = M"0000000----------000-----0110011"
   val SUB                = M"0100000----------000-----0110011"
   val SLL                = M"0000000----------001-----0110011"
@@ -58,21 +63,24 @@ object OpCodes extends SpinalEnum{
   val OR                 = M"0000000----------110-----0110011"
   val AND                = M"0000000----------111-----0110011"
 
+  // Immediate Instructions
   val ADDI               = M"-----------------000-----0010011"
-  val SLLI               = M"0000000----------001-----0010011"
   val SLTI               = M"-----------------010-----0010011"
   val SLTIU              = M"-----------------011-----0010011"
   val XORI               = M"-----------------100-----0010011"
-  val SRLI               = M"0000000----------101-----0010011"
-  val SRAI               = M"0100000----------101-----0010011"
   val ORI                = M"-----------------110-----0010011"
   val ANDI               = M"-----------------111-----0010011"
+  val SLLI               = M"0000000----------001-----0010011"
+  val SRLI               = M"0000000----------101-----0010011"
+  val SRAI               = M"0100000----------101-----0010011"
 
+  // I-type
   val LB                 = M"-----------------000-----0000011"
   val LH                 = M"-----------------001-----0000011"
   val LW                 = M"-----------------010-----0000011"
   val LBU                = M"-----------------100-----0000011"
   val LHU                = M"-----------------101-----0000011"
+  // S-type
   val SB                 = M"-----------------000-----0100011"
   val SH                 = M"-----------------001-----0100011"
   val SW                 = M"-----------------010-----0100011"
