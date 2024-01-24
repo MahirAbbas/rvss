@@ -29,6 +29,8 @@ case class Decode() extends Node{
     
     val io = new Bundle {
         val instruction = in Bits(32 bits)
+        val WD3 = in port Bits(32 bits)
+        val A3 = in port Bits(32 bits)
     }
     
     val registerControl = new Area {

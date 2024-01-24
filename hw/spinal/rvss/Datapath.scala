@@ -10,7 +10,8 @@ import Execute._
 import Memory._
 import Fetch._
 import Decode._
-import DatapathDecode
+// import DatapathDecode
+import Writeback._
 
 // object Datapath extends AreaObject {
 //     val INSTRUCTION = Payload(Bits(32 bits))
@@ -33,6 +34,7 @@ import DatapathDecode
 
 case class Datapath() extends Area{
     import Datapath._
+    // import Decode._
     
     val io = new Bundle {
         val PCSrc = in Bool()
@@ -46,85 +48,71 @@ case class Datapath() extends Area{
         val zero = out Bool()
     }
     
-    val fetch = new Fetch()
-    val datapathDecode = new  DatapathDecode()
-    val execute = new Execute()
-    val memory = new Memory()
+    // val fetch = new Fetch()
+    // val datapathDecode = new  DatapathDecode()
+    // val execute = new Execute()
+    // val memory = new Memory()
     
     
-    io.zero := execute.io.zero
+    // io.zero := execute.io.zero
 
-    val builder = new NodesBuilder()
 
     // val FETCH, DECODE, EXECUTE, MEMORY = Node()
     
     val FETCH = new Fetch()
     val DECODE = new Decode()
     val EXECUTE = new Execute()
+    val MEMORY = new Memory()
+    val WRITEBACK = new Writeback()
     
-    val c01 = StageLink(DECODE, EXECUTE)
+    val s01 = StageLink(FETCH, DECODE)
+    val s12 = StageLink(DECODE, EXECUTE)
+    val s23 = StageLink(EXECUTE, MEMORY)
+    val s34 = StageLink(MEMORY, WRITEBACK)
 
-
-   
-    
-
-    
-    builder.genStagedPipeline()
-    
-
-    
-    //*****************************************
-    //Connect Execute to DataMemory
-    // memory.io.memWrite:= io.MemWrite
-
-    // memory.io.resultSrc := memoryResultSrc
-    // memory.io.aluResult := execute.io.aluResult
-    // memory.io.writeData := execute.io.RD2E
-
+    Builder(s01,s12,s23,s34)    
     
 
     // CONNECT ALU TO WD3E
     // CONNECT RD2 to DATAMEMORY
-    // memory.io.writeData := execute.io.RD2E
-    datapathDecode.io.WD3E := io.ResultSrc.mux(
-        0 -> execute.io.aluResult.asBits,
-        1 -> memory.io.result.asBits,
-        2 -> (fetch.io.PC ).asBits,
-        default -> execute.io.aluResult.asBits
-    )
+    // 
+    import rvss.Decode.Decode._
+    import rvss.Execute.Execute._
+    import rvss.Memory.Memory._
+    import rvss.Fetch.Fetch._
+
+    // DECODE.io.WD3 := RESULTSRC.mux[Bits](
+    //     0 -> WRITEBACK(ALURESULT).asBits,
+    //     1 -> memory.io.result.asBits,
+    //     2 -> (fetch.io.PC ).asBits,
+    //     default -> execute.io.aluResult.asBits
+    // )
+    
+    val WritebackStuff = new WRITEBACK.Area {
+        DECODE.io.WD3 := RESULTSRC.mux{
+        0 -> WRITEBACK(ALURESULT).asBits;
+        1 -> READDATA;
+        2 -> PCPLUS4.asBits;
+        default -> WRITEBACK(ALURESULT).asBits
+        }
+
+    }
+    
+    // val decodestuff = new DECODE.Area {
+
+    // }
     // (io.ResultSrc,memory.io.result.asBits, execute.io.aluResult.asBits)
 
     
 
-    // CONNECT FETCH TO BRANCH TARGET
-    // 
     val PCTarget = UInt(32 bits)
     val branch_immediate = UInt(32 bits)
-    fetch.io.branch := io.PCSrc
-    PCTarget := fetch.io.PC + (datapathDecode.io.extended.asUInt / 4)
-    fetch.io.branchTarget := PCTarget
+    // fetch.io.branch := io.PCSrc
+    // PCTarget := fetch.io.PC + (datapathDecode.io.extended.asUInt / 4)
+    // fetch.io.branchTarget := PCTarget
 
     
     
 
-    // val instructionBridge = Bits(32 bits)
-    // instructionBridge := fetch.io.instruction
-    // datapathDecode.io.instr := instructionBridge
 
-    //*****************************************
-    //Connect Fetch to Decode
-    // datapathDecode.io.instr := fetch.io.instruction
-    // io.instruction := fetch.io.instruction
-    // datapathDecode.io.itype := io.itype
-    // datapathDecode.io.writeEnable := io.RegWrite
-
-
-    //*****************************************
-    //Connect Decode to Execute
-    //
-    // execute.io.RD1E := datapathDecode.io.RD1E
-    // execute.io.RD2E := datapathDecode.io.RD2E
-    // execute.io.immExt := datapathDecode.io.extended
-    // execute.io.aluSrc := io.ALUSrc
-    // execute.io.aluControl := io.ALUControl
 }

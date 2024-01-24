@@ -2,7 +2,7 @@ package rvss
 
 import spinal.core._
 import spinal.core.sim._
-import OpCode._
+// import OpCode._
 import Execute.ALU
 import Decode.Decode
 
