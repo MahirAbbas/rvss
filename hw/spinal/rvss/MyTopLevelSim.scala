@@ -85,8 +85,10 @@ object MyTopLevelSim extends App {
 }
 
 
+
 object ALUSim extends App {
-  Config.sim.compile(ALU()).doSim { dut =>
+  // val ALU = SpinalVerilog(new Component{ALU()})
+  Config.sim.compile(new ALU()).doSim { dut =>
     dut.clockDomain.forkStimulus(6)
     
     dut.io.SrcA #= BigInt("10")
@@ -117,10 +119,16 @@ object ALUSim extends App {
   }
 }
 
-
+import rvss.Decode.Decode._
 object DecodeTestBench extends App {
+  val Decode = new Component {
+    val io = new Bundle {
+      
+    }
+    val DECODE = new Decode()
+  }
  
-  Config.sim.compile(Decode()).doSim { dut =>
+  Config.sim.compile(DECODE).doSim { dut =>
     dut.io.instr #= 0
     dut.clockDomain.forkStimulus(period = 10)
     // dut.io.operation.simPublic()

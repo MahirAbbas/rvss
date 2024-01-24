@@ -6,7 +6,7 @@ import spinal.core.sim._
 object IntAlu extends AreaObject {
 
 }
-case class ALU() extends Area {
+case class ALU() extends Component{
     val io = new Bundle {
         val SrcA, SrcB = in SInt(32 bits) simPublic()
         val ALUControl = in UInt(3 bits)
